@@ -239,6 +239,7 @@ html{scroll-padding-top:7rem}
 #newsList .newsli-body{margin:0 1.5rem;padding:1.1rem 0 1.3rem;border-top:1px solid var(--line);color:var(--ink2);line-height:1.8}
 #newsList .newsli-body p{margin:0 0 .7rem}
 #newsList .newsli-body p:last-child{margin-bottom:0}
+#newsList .newsli-img{display:block;width:100%;max-width:34rem;height:auto;border-radius:12px;border:1px solid var(--line);margin:0 0 1.1rem}
 @media (max-width:640px){
   #newsList .newsli.has-body>details>summary{grid-template-columns:1fr;gap:.5rem}
   #newsList .newsli.has-body>details>summary::after{justify-self:start}
@@ -321,7 +322,7 @@ header{position:static !important}
       <h2 style="font-size:clamp(1.3rem,1.9vw,1.6rem)">지금 모집·홍보 중</h2>
       <a href="#news" style="margin-left:auto;font-weight:700">공지 전체보기 →</a>
     </div>
-    <div class="grid g4">
+    <div class="grid g4" id="recruitCards">
       <article class="card" style="border:1px solid var(--teal);display:flex;flex-direction:column;gap:.55rem">
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center"><span class="pill amber">모집중</span><small style="font-weight:600;color:var(--ink2)">~ 8월 22일(금) 접수</small></div>
         <a href="#programs" style="font-size:1.12rem;font-weight:700;color:var(--ink)">경계선지능 청년 맞춤 직무교육 하반기 과정</a>
@@ -826,7 +827,7 @@ header{position:static !important}
       <h1 class="h-page">세움의 요즘 이야기</h1>
       <p class="lead" style="margin-top:1rem">교육 모집 공지, 현장 소식, 지금 진행 중인 프로젝트를 알려드립니다. 궁금한 점은 전화로도 편히 물어보세요.</p>
     </div>
-    <div style="background:var(--amber-l);border-radius:16px;padding:1.75rem">
+    <div style="background:var(--amber-l);border-radius:16px;padding:1.75rem" id="recruitSide">
       <h2 style="font-size:1.15rem;color:var(--teal-d);margin-bottom:.6rem">지금 모집 중</h2>
       <p style="line-height:1.75;margin-bottom:1rem"><strong>직무지도원 실무교육</strong><br>7월 30일(목)까지 선착순 20명. 7월 31일(금) 오후 2시, 대구 사회적경제지원센터.</p>
       <a class="btn pr" href="#news">교육 안내 보기</a>
@@ -845,7 +846,7 @@ header{position:static !important}
       <button type="button" data-tab="언론보도">언론보도</button>
     </div>
 
-    <article class="card" data-reveal style="border:1px solid var(--teal);box-shadow:var(--sh);padding:2rem;display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1fr);gap:2rem;align-items:start;margin-bottom:1.25rem">
+    <article class="card" data-reveal id="recruitFeatured" style="border:1px solid var(--teal);box-shadow:var(--sh);padding:2rem;display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1fr);gap:2rem;align-items:start;margin-bottom:1.25rem">
       <div class="ph" style="min-height:20rem">직무지도원 실무교육 안내 포스터</div>
       <div style="display:flex;flex-direction:column;gap:.9rem">
         <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap"><span class="pill amber">모집 공지</span><small style="color:var(--ink3)">2026.07.26</small></div>
@@ -1124,12 +1125,19 @@ header{position:static !important}
       var head = '<span class="pill teal" style="justify-self:start">'+n.tag+'</span>'+
                  '<span style="font-weight:600">'+n.title+'</span>'+
                  '<span class="date">'+n.date+'</span>';
-      var body = newsBody(n.body);
+      var body = newsImage(n) + newsBody(n.body);
       if (!body) return '<li class="newsli">'+head+'</li>';
       return '<li class="newsli has-body"><details><summary>'+head+'</summary>'+
              '<div class="newsli-body">'+body+'</div></details></li>';
     }).join('');
     total.textContent = items.length;
+  }
+
+  /* [2026-07-29] 소식에 붙인 사진. 없으면 빈 문자열. */
+  function newsImage(n){
+    if (!n || !n.image) return '';
+    var alt = String(n.title || '소식 사진').replace(/"/g, '&quot;');
+    return '<img class="newsli-img" src="' + n.image + '" alt="' + alt + '" loading="lazy">';
   }
 
   /* [2026-07-28] 관리 화면에서 적은 본문을 화면용으로 바꾼다.
@@ -1143,6 +1151,116 @@ header{position:static !important}
       return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
     }).join('');
   }
+
+  /* ══════════════════════════════════════════════════════════
+     [2026-07-29] 모집 안내를 data/recruit.json 에서 읽어온다.
+     읽지 못하면 아래 HTML 에 적힌 내용이 그대로 남는다(안전장치).
+     ══════════════════════════════════════════════════════════ */
+  function esc(t){
+    return String(t == null ? '' : t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function lines(t){
+    return esc(t).split(/\n/).join('<br>');
+  }
+
+  function drawRecruitCards(cards){
+    var box = document.getElementById('recruitCards');
+    if (!box || !cards || !cards.length) return;
+    var html = cards.map(function(c){
+      if (!c || !c.title) return '';
+      var border = c.highlight ? 'border:1px solid var(--teal);' : '';
+      var pill = 'pill ' + (c.color === 'amber' ? 'amber' : 'teal');
+      var period = c.period
+        ? '<small style="font-weight:600;color:var(--ink2)">' + esc(c.period) + '</small>' : '';
+      return '<article class="card" style="' + border + 'display:flex;flex-direction:column;gap:.55rem">' +
+        '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">' +
+          '<span class="' + pill + '">' + esc(c.badge) + '</span>' + period + '</div>' +
+        '<a href="' + esc(c.link || '#programs') + '" style="font-size:1.12rem;font-weight:700;color:var(--ink)">' +
+          esc(c.title) + '</a>' +
+        '<small style="margin-top:auto;color:var(--ink2);line-height:1.7">' + lines(c.desc) + '</small>' +
+      '</article>';
+    }).join('');
+    html += '<div style="background:var(--amber-l);border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;gap:.8rem;justify-content:center">' +
+      '<a class="btn pr" style="justify-content:center" href="#contact">신청·문의하기 →</a>' +
+      '<small style="text-align:center;color:var(--ink2)">053-795-2013</small></div>';
+    box.innerHTML = html;
+  }
+
+  function drawRecruitSide(f){
+    var box = document.getElementById('recruitSide');
+    if (!box) return;
+    if (!f || f.show === false || !f.short_title){ box.style.display = 'none'; return; }
+    box.style.display = '';
+    box.innerHTML =
+      '<h2 style="font-size:1.15rem;color:var(--teal-d);margin-bottom:.6rem">지금 모집 중</h2>' +
+      '<p style="line-height:1.75;margin-bottom:1rem"><strong>' + esc(f.short_title) + '</strong><br>' +
+        lines(f.short_desc) + '</p>' +
+      '<a class="btn pr" href="#news">' + esc(f.short_button || '자세히 보기') + '</a>';
+  }
+
+  function drawRecruitFeatured(f){
+    var box = document.getElementById('recruitFeatured');
+    if (!box) return;
+    if (!f || f.show === false || !f.title){ box.style.display = 'none'; return; }
+    /* 이 카드는 원래 2단 격자다. display 를 비우면 격자가 풀려 사진이
+       화면 폭을 다 차지하므로, 다시 보일 때는 grid 로 되돌린다. */
+    box.style.display = 'grid';
+
+    var left = f.image
+      ? '<img src="' + esc(f.image) + '" alt="' + esc(f.image_caption || f.title) +
+        '" loading="lazy" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--line)">'
+      : '<div class="ph" style="min-height:20rem">' + esc(f.image_caption || '안내 포스터') + '</div>';
+
+    var dl = '';
+    if (f.details && f.details.length){
+      dl = '<dl style="margin:0;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.4rem 1rem;font-size:1.02rem;line-height:1.7">' +
+        f.details.filter(function(d){ return d && d.label; }).map(function(d){
+          return '<dt style="font-weight:700;color:var(--teal-d)">' + esc(d.label) + '</dt>' +
+                 '<dd style="margin:0">' + lines(d.value) + '</dd>';
+        }).join('') + '</dl>';
+    }
+
+    var notes = '';
+    if (f.notes){
+      notes = '<div style="background:var(--teal-l);border-radius:14px;padding:1.1rem 1.3rem">' +
+        (f.notes_title ? '<strong style="display:block;color:var(--teal-d);margin-bottom:.5rem">' + esc(f.notes_title) + '</strong>' : '') +
+        '<div style="line-height:1.8">' + lines(f.notes) + '</div></div>';
+    }
+
+    var btns = [];
+    if (f.apply_url && f.apply_label){
+      btns.push('<a class="btn pr" href="' + esc(f.apply_url) + '" target="_blank" rel="noopener">' + esc(f.apply_label) + '</a>');
+    }
+    if (f.contact_url && f.contact_label){
+      btns.push('<a class="btn" href="' + esc(f.contact_url) + '" style="background:var(--surface);border:1px solid var(--line);color:var(--ink)">' + esc(f.contact_label) + '</a>');
+    }
+    var btnRow = btns.length ? '<div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.3rem">' + btns.join('') + '</div>' : '';
+
+    box.innerHTML = left +
+      '<div style="display:flex;flex-direction:column;gap:.9rem">' +
+        '<div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">' +
+          '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>' +
+          '<small style="color:var(--ink3)">' + esc(f.date) + '</small></div>' +
+        '<h3 style="font-size:clamp(1.3rem,2vw,1.7rem)">' + esc(f.title) + '</h3>' +
+        '<p style="line-height:1.8">' + lines(f.intro) + '</p>' +
+        dl + notes + btnRow +
+      '</div>';
+  }
+
+  (function loadRecruit(){
+    if (!window.fetch) return;
+    fetch('data/recruit.json', {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d) return;
+        drawRecruitCards(d.cards);
+        drawRecruitSide(d.featured);
+        drawRecruitFeatured(d.featured);
+        if (typeof observeAll === 'function') observeAll();
+      })
+      .catch(function(){ /* 못 읽으면 기존 내용 유지 */ });
+  })();
 
   /* [2026-07-28] 소식은 data/news.json 에서 읽어온다.
      읽지 못하면 위에 적힌 목록이 그대로 쓰이므로 화면이 비지 않는다. */
