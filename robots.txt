@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# 네이버 검색 로봇
+User-agent: Yeti
+Allow: /
+
+# 다음 검색 로봇
+User-agent: Daum
+Allow: /
+
+Sitemap: https://seum13.com/sitemap.xml
