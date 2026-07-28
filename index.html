@@ -1124,12 +1124,44 @@ header{position:static !important}
       var head = '<span class="pill teal" style="justify-self:start">'+n.tag+'</span>'+
                  '<span style="font-weight:600">'+n.title+'</span>'+
                  '<span class="date">'+n.date+'</span>';
-      if (!n.body) return '<li class="newsli">'+head+'</li>';
+      var body = newsBody(n.body);
+      if (!body) return '<li class="newsli">'+head+'</li>';
       return '<li class="newsli has-body"><details><summary>'+head+'</summary>'+
-             '<div class="newsli-body">'+n.body+'</div></details></li>';
+             '<div class="newsli-body">'+body+'</div></details></li>';
     }).join('');
     total.textContent = items.length;
   }
+
+  /* [2026-07-28] 관리 화면에서 적은 본문을 화면용으로 바꾼다.
+     빈 줄 = 문단, 줄바꿈 = <br>. 이미 HTML 로 적혀 있으면 그대로 둔다. */
+  function newsBody(t){
+    if (!t) return '';
+    t = String(t).trim();
+    if (!t) return '';
+    if (t.charAt(0) === '<') return t;
+    return t.split(/\n\s*\n/).map(function(p){
+      return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+  }
+
+  /* [2026-07-28] 소식은 data/news.json 에서 읽어온다.
+     읽지 못하면 위에 적힌 목록이 그대로 쓰이므로 화면이 비지 않는다. */
+  (function loadNews(){
+    if (!window.fetch) return;
+    fetch('data/news.json', {cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d || !Array.isArray(d.items)) return;
+        var live = d.items.filter(function(n){
+          return n && n.title && n.visible !== false;
+        });
+        if (!live.length) return;
+        NEWS = live;
+        var on = document.querySelector('.tabs button.on');
+        renderNews(on ? on.textContent.trim() : '전체');
+      })
+      .catch(function(){ /* 못 읽으면 기존 목록 유지 */ });
+  })();
   renderNews('전체');
   document.querySelectorAll('.tabs button').forEach(function(b){
     b.addEventListener('click', function(){
