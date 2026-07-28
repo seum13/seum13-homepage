@@ -1,0 +1,76 @@
+# ══════════════════════════════════════════════════════════════
+#  세움 홈페이지 관리 화면 설정
+#  이 파일은 관리자 화면(seum13.com/admin)이 무엇을 보여줄지 정합니다.
+# ══════════════════════════════════════════════════════════════
+
+# ┌────────────────────────────────────────────────────────────┐
+# │ [할 일] 아래 backend 블록 5줄을 지우고,                        │
+# │ DecapBridge 화면에서 복사한 backend 설정을 그 자리에 붙여넣으세요.  │
+# │ 그전까지는 로그인이 되지 않습니다.                              │
+# └────────────────────────────────────────────────────────────┘
+backend:
+  name: git-gateway
+  repo: seum13/seum13-homepage
+  branch: main
+# ── 여기까지 교체 ──
+
+# 사진을 올리면 images 폴더에 저장됩니다
+media_folder: "images"
+public_folder: "images"
+
+# 관리자 화면의 버튼(Publish, Save 등)은 영어로 나옵니다.
+# 입력 칸 이름(분류·제목·날짜·본문)은 아래에서 한국어로 지정해 두었습니다.
+
+# 저장 기록에 남을 문구
+site_url: https://seum13.com
+display_url: https://seum13.com
+logo_url: https://seum13.com/images/logo-seum.jpg
+
+collections:
+  # ─────────────────────────────────────────────
+  #  소식 · 공지
+  # ─────────────────────────────────────────────
+  - name: "news"
+    label: "소식 · 공지"
+    files:
+      - name: "list"
+        label: "소식 목록"
+        file: "data/news.json"
+        format: "json"
+        description: "홈페이지 '소식' 화면에 나오는 목록입니다. 새 소식은 맨 위에 추가하세요."
+        fields:
+          - name: "items"
+            label: "소식"
+            label_singular: "소식"
+            widget: "list"
+            summary: "{{fields.date}}  ·  {{fields.title}}"
+            fields:
+              - name: "tag"
+                label: "분류"
+                widget: "select"
+                options: ["공지", "세움소식", "언론보도"]
+                default: "공지"
+                hint: "세 가지 중에서만 고르세요. 다른 값을 넣으면 필터에서 사라집니다."
+
+              - name: "title"
+                label: "제목"
+                widget: "string"
+                hint: "목록에 한 줄로 보이는 제목입니다."
+
+              - name: "date"
+                label: "날짜"
+                widget: "string"
+                pattern: ['^\d{4}\.\d{2}\.\d{2}$', "2026.08.05 처럼 점으로 구분해 적어주세요"]
+                hint: "2026.08.05 형식 (점 구분, 두 자리)"
+
+              - name: "body"
+                label: "본문"
+                widget: "text"
+                required: false
+                hint: "비워두면 제목만 한 줄로 나옵니다. 내용을 적으면 제목을 눌러 펼쳐볼 수 있습니다. 문단은 빈 줄로 나누세요."
+
+              - name: "visible"
+                label: "홈페이지에 보이기"
+                widget: "boolean"
+                default: true
+                hint: "끄면 홈페이지에서 숨겨집니다. 아직 공개하기 전인 글에 쓰세요."
