@@ -3,16 +3,16 @@
 #  이 파일은 관리자 화면(seum13.com/admin)이 무엇을 보여줄지 정합니다.
 # ══════════════════════════════════════════════════════════════
 
-# ┌────────────────────────────────────────────────────────────┐
-# │ [할 일] 아래 backend 블록 5줄을 지우고,                        │
-# │ DecapBridge 화면에서 복사한 backend 설정을 그 자리에 붙여넣으세요.  │
-# │ 그전까지는 로그인이 되지 않습니다.                              │
-# └────────────────────────────────────────────────────────────┘
+# Use DecapBridge PKCE auth (required)
 backend:
   name: git-gateway
   repo: seum13/seum13-homepage
   branch: main
-# ── 여기까지 교체 ──
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/1fab991c-2a9b-41d2-bdf6-a91926608714/pkce
+  auth_token_endpoint: /sites/1fab991c-2a9b-41d2-bdf6-a91926608714/token
+  gateway_url: https://gateway.decapbridge.com
 
 # 사진을 올리면 images 폴더에 저장됩니다
 media_folder: "images"
