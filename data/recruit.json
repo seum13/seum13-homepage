@@ -3,16 +3,18 @@
     {
       "badge": "모집중",
       "color": "amber",
+      "deadline": "2026.08.22",
       "period": "~ 8월 22일(금) 접수",
       "title": "경계선지능 청년 맞춤 직무교육 하반기 과정",
-      "desc": "만 15–34세 청년 · 12주 · 무료\n대구 수성구 세움 교육장",
+      "desc": "만 15-34세 청년 · 12주 · 무료\n대구 수성구 세움 교육장",
       "link": "#programs",
       "highlight": true
     },
     {
       "badge": "단체 신청",
       "color": "teal",
-      "period": "9–12월 일정 협의",
+      "deadline": "",
+      "period": "9-12월 일정 협의",
       "title": "펫톡119 반려동물 동반 재난안전 교육",
       "desc": "학교·복지관·기관 단체 신청 · 출강 가능",
       "link": "#programs",
@@ -21,15 +23,29 @@
     {
       "badge": "상시 모집",
       "color": "teal",
+      "deadline": "",
       "period": "",
       "title": "RE:Dog 동물교감 소그룹 프로그램",
-      "desc": "청소년·청년 소그룹 · 회기당 4–6명",
+      "desc": "청소년·청년 소그룹 · 회기당 4-6명",
       "link": "#programs",
       "highlight": false
     }
   ],
   "featured": {
-    "notes": "1. 직장 정착과 직무지도원의 역할 — 경계선지능인의 직장 적응 과정과 특성\n2. 중점 지원 내용\n3. 직무지도의 원칙, 일지 및 평가 기록지 작성",
+    "show": true,
+    "deadline": "2026.07.30",
+    "after_deadline": "keep",
+    "in_news": true,
+    "news_tag": "공지",
+    "short_title": "직무지도원 실무교육",
+    "short_desc": "선착순 20명. 7월 31일(금) 오후 2시, 대구 사회적경제지원센터.",
+    "short_button": "교육 안내 보기",
+    "badge": "모집 공지",
+    "date": "2026.07.26",
+    "title": "경계선지능 청년의 일경험 동반자, '직무지도원' 실무교육 참가자를 모집합니다",
+    "image": "images/poster-jikmujidowon-training.png",
+    "image_caption": "직무지도원 실무교육 안내 포스터",
+    "intro": "경계선지능인의 특성과 실제 직무지도 사례를 바탕으로 한 2시간 실무교육입니다. 한국경계선지능연구학회가 주최·주관하고 교육협동조합 세움이 사업지원으로 참여합니다. 참가 인원은 선착순 20명으로 제한하며, 정원이 찬 뒤에는 취소자가 생기는 대로 순차적으로 연락드립니다.",
     "details": [
       {
         "label": "일시",
@@ -42,22 +58,17 @@
       {
         "label": "주최·주관",
         "value": "한국경계선지능연구학회 · 사업지원 교육협동조합 세움"
+      },
+      {
+        "label": "신청조건",
+        "value": "한국장애인고용공단 EDI사이버연수원(cyedu.kead.or.kr)에서\n교육신청 > 사이버교육 > 직무지도원 양성과정(2시간) 수강 후\n수료증을 kabis.official@gmail.com 으로 제출"
       }
     ],
-    "image_caption": "직무지도원 실무교육 안내 포스터",
-    "apply_label": "신청서 작성하기 →",
-    "badge": "모집 공지",
-    "intro": "경계선지능인의 특성과 실제 직무지도 사례를 바탕으로 한 2시간 실무교육입니다. 한국경계선지능연구학회가 주최·주관하고 교육협동조합 세움이 사업지원으로 참여합니다. 참가 인원은 7월 30일(목)까지 선착순 20명으로 제한합니다.",
-    "date": "2026.07.26",
-    "contact_url": "tel:070-7792-0179",
-    "short_desc": "7월 30일(목)까지 선착순 20명. 7월 31일(금) 오후 2시, 대구 사회적경제지원센터.",
-    "short_button": "교육 안내 보기",
-    "short_title": "직무지도원 실무교육",
-    "contact_label": "참가문의 070-7792-0179",
-    "title": "경계선지능 청년의 일경험 동반자, ‘직무지도원’ 실무교육 참가자를 모집합니다",
     "notes_title": "교육 내용",
-    "image": "",
-    "show": true,
-    "apply_url": "https://form.naver.com/response/HU32LMQCqm3"
+    "notes": "1. 직장 정착과 직무지도원의 역할 - 경계선지능인의 직장 적응 과정과 특성\n2. 중점 지원 내용\n3. 직무지도의 원칙, 일지 및 평가 기록지 작성\n\n교육 이후 직무지도원 모임도 운영될 예정입니다.",
+    "apply_label": "신청서 작성하기 →",
+    "apply_url": "https://form.naver.com/response/HU32LMQCqm3",
+    "contact_label": "참가문의 070-7792-0179",
+    "contact_url": "tel:070-7792-0179"
   }
 }
