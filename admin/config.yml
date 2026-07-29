@@ -121,6 +121,12 @@ collections:
                   - { label: "홈페이지에서 감추기", value: "hide" }
                 hint: "그대로 두면 어떤 사업을 했는지 기록으로 남고, 다음 모집 때 참고가 됩니다."
 
+              - name: "in_cards"
+                label: "홈 화면 '지금 모집·홍보 중'에도 넣기"
+                widget: "boolean"
+                default: true
+                hint: "켜두면 홈 화면 맨 앞 카드로 자동으로 나옵니다. 아래 '홈 화면 모집 카드' 목록에 같은 걸 또 만들지 마세요 — 두 번 나옵니다."
+
               - name: "in_news"
                 label: "소식 목록에도 자동으로 넣기"
                 widget: "boolean"
