@@ -37,7 +37,7 @@ collections:
         label: "소식 목록"
         file: "data/news.json"
         format: "json"
-        description: "홈페이지 '소식' 화면에 나오는 목록입니다. 새 소식은 맨 위에 추가하세요."
+        description: "홈페이지 '소식' 화면에 나오는 목록입니다. 새 소식은 맨 위에 추가하세요. ※ 모집 안내는 여기에 적지 마세요 — 왼쪽 '모집 안내'에 한 번만 적으면 이 목록에 자동으로 나옵니다."
         fields:
           - name: "items"
             label: "소식"
@@ -92,7 +92,7 @@ collections:
         label: "지금 모집 중"
         file: "data/recruit.json"
         format: "json"
-        description: "홈 화면의 모집 카드와, 소식 화면의 '지금 모집 중' 안내를 여기서 바꿉니다."
+        description: "여기에 한 번만 적으면 ① 홈 화면 모집 카드 ② 소식 화면 '지금 모집 중' 노란 상자 ③ 상세 안내 카드 ④ 소식 목록 항목까지 한꺼번에 바뀝니다. 접수 마감일이 지나면 자동으로 '마감'으로 바뀝니다."
         fields:
           - name: "featured"
             label: "지금 모집 중 (크게 보이는 안내)"
@@ -103,7 +103,36 @@ collections:
                 label: "지금 보여주기"
                 widget: "boolean"
                 default: true
-                hint: "모집이 끝나면 이것만 꺼도 홈페이지에서 사라집니다. 내용은 그대로 남아 있어 다음에 참고할 수 있습니다."
+                hint: "끄면 홈페이지에서 사라집니다. 내용은 그대로 남아 있어 다음에 참고할 수 있습니다. 모집이 끝난 경우에는 이걸 끄지 않아도 아래 '접수 마감일'이 알아서 처리합니다."
+
+              - name: "deadline"
+                label: "접수 마감일"
+                widget: "string"
+                required: false
+                pattern: ['^(\d{4}\.\d{2}\.\d{2})?$', "2026.07.30 처럼 점으로 구분해 적어주세요"]
+                hint: "★ 여기에 적어두면 마감일 다음 날부터 홈페이지가 자동으로 '모집 마감'으로 바뀝니다. 노란 상자는 사라지고, 신청 버튼도 내려가고, 소식 목록 제목 앞에 [마감]이 붙습니다. 손댈 필요가 없습니다. 상시 모집이면 비워두세요."
+
+              - name: "after_deadline"
+                label: "마감된 뒤에는"
+                widget: "select"
+                default: "keep"
+                options:
+                  - { label: "[마감] 표시하고 그대로 두기 (권장)", value: "keep" }
+                  - { label: "홈페이지에서 감추기", value: "hide" }
+                hint: "그대로 두면 어떤 사업을 했는지 기록으로 남고, 다음 모집 때 참고가 됩니다."
+
+              - name: "in_news"
+                label: "소식 목록에도 자동으로 넣기"
+                widget: "boolean"
+                default: true
+                hint: "켜두면 이 모집 안내가 '소식' 목록에도 자동으로 한 줄 올라갑니다. 소식에 같은 내용을 또 적지 마세요 — 두 번 나옵니다."
+
+              - name: "news_tag"
+                label: "소식 목록에서의 분류"
+                widget: "select"
+                options: ["공지", "세움소식", "언론보도"]
+                default: "공지"
+                required: false
 
               - name: "short_title"
                 label: "짧은 제목"
@@ -211,7 +240,13 @@ collections:
                 widget: "select"
                 options: [{ label: "노랑 (눈에 띄게)", value: "amber" }, { label: "초록 (보통)", value: "teal" }]
                 default: "teal"
-              - { name: "period", label: "기간 문구", widget: "string", required: false, hint: "예) ~ 8월 22일(금) 접수. 비워도 됩니다." }
+              - name: "deadline"
+                label: "접수 마감일"
+                widget: "string"
+                required: false
+                pattern: ['^(\d{4}\.\d{2}\.\d{2})?$', "2026.08.22 처럼 점으로 구분해 적어주세요"]
+                hint: "★ 적어두면 마감일 다음 날부터 배지가 회색 '모집 마감'으로 바뀌고 카드가 뒤로 밀립니다. 상시 모집이면 비워두세요."
+              - { name: "period", label: "기간 문구", widget: "string", required: false, hint: "위 '접수 마감일'을 적으면 이 칸은 무시됩니다. 마감일이 없는 카드에만 쓰세요. 예) 9–12월 일정 협의" }
               - { name: "title", label: "제목", widget: "string" }
               - { name: "desc", label: "설명", widget: "text", hint: "줄바꿈한 대로 나옵니다." }
               - { name: "link", label: "눌렀을 때 갈 곳", widget: "string", default: "#programs", hint: "#programs 주요사업 · #news 소식 · #contact 문의하기" }
