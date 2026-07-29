@@ -35,6 +35,7 @@
     "show": true,
     "deadline": "2026.07.30",
     "after_deadline": "keep",
+    "in_cards": true,
     "in_news": true,
     "news_tag": "공지",
     "short_title": "직무지도원 실무교육",
