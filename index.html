@@ -93,6 +93,10 @@ body.hc .nav{background:rgba(255,255,255,.97)}
 .pill.teal{background:var(--teal-l);color:var(--teal-d)}
 .pill.amber{background:var(--amber);color:#3B2A05}
 .pill.amber-l{background:var(--amber-l);color:var(--amber-t)}
+.pill.gray{background:#ECEAE4;color:#5C6663}
+body.hc .pill.gray{background:#DDD9D1;color:#212E2B}
+.closed-note{background:#F1EFE9;border-radius:12px;padding:.75rem 1rem;color:var(--ink2);font-weight:600}
+.card.is-closed{opacity:.62}
 .btn{display:inline-flex;align-items:center;gap:.5rem;min-height:3.2rem;padding:0 1.4rem;border-radius:.9rem;font-size:1.05rem;font-weight:700;text-decoration:none;border:0}
 .btn.pr{background:var(--teal);color:#fff;box-shadow:var(--sh-sm)}
 .btn.pr:hover{background:var(--teal-d);color:#fff;text-decoration:none}
@@ -435,7 +439,8 @@ header{position:static !important}
         <p>교육은 혼자 할 수 없습니다. 학교·지자체·기업·지역이 함께해 주셨기에 여기까지 왔습니다. 앞으로도 경계를 허물며 청년의 일상을 함께 세우겠습니다.</p>
       </div>
       <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--line)">
-        <p style="font-weight:700;color:var(--teal-d);margin:0">교육협동조합 세움 이사장 박호일</p>
+        <p style="font-weight:700;color:var(--teal-d)">교육협동조합 세움 이사장 박호일</p>
+        <small style="color:var(--ink2);line-height:1.7">대구한의대학교 반려동물보건학과 겸임교수 · 대구 북구 관음동 도시재생현장지원센터장</small>
       </div>
     </div>
   </div>
@@ -1100,6 +1105,39 @@ header{position:static !important}
     t.innerHTML = html + html;
   });
 
+  /* ══════════════════════════════════════════════════════════
+     [2026-07-29] 마감일 자동 처리 + 모집 안내 ↔ 소식 연동
+     ─ 모집 정보는 '모집 안내' 한 곳에만 적는다.
+     ─ 소식 목록에는 그 내용이 자동으로 끼어 들어간다(중복 입력 불필요).
+     ─ 마감일이 지나면 '모집중' 표시가 자동으로 '마감'으로 바뀐다.
+     ══════════════════════════════════════════════════════════ */
+  function esc(t){
+    return String(t == null ? '' : t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function lines(t){
+    return esc(t).split(/\n/).join('<br>');
+  }
+  /* '2026.07.30' → Date. 형식이 아니면 null */
+  function toDate(s){
+    var m = String(s == null ? '' : s).match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  /* 마감일 '당일 자정'까지는 모집중, 그다음 날부터 마감.
+     마감일을 안 적으면 계속 모집중으로 둔다(상시 모집). */
+  function isClosed(deadline){
+    var d = toDate(deadline);
+    if (!d) return false;
+    var n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime() > d.getTime();
+  }
+  function fmtDate(s){
+    var d = toDate(s);
+    if (!d) return esc(s);
+    return d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일(' +
+           ['일','월','화','수','목','금','토'][d.getDay()] + ')';
+  }
+
   /* ---------- 뉴스 목록 / 필터 ---------- */
   var NEWS = [
     {tag:'공지', title:'‘직무지도원’ 실무교육 참가자 모집 — 7월 31일(금) 대구 사회적경제지원센터 (7월 30일까지 접수)', date:'2026.07.26',
@@ -1118,8 +1156,48 @@ header{position:static !important}
   ];
   var list = document.getElementById('newsList');
   var total = document.getElementById('newsTotal');
+
+  /* [2026-07-29] '모집 안내'에 적은 내용을 소식 항목 하나로 바꾼다.
+     소식 목록에 자동으로 들어가므로 같은 내용을 두 번 적지 않아도 된다. */
+  var RECRUIT_ITEM = null;
+  function recruitAsNews(f){
+    if (!f || !f.title || f.in_news === false) return null;
+    var closed = isClosed(f.deadline);
+    if (closed && f.after_deadline === 'hide') return null;   /* 마감 뒤 숨기기를 고른 경우 */
+    if (!closed && f.show === false) return null;             /* 아직 공개 전 */
+
+    var h = '';
+    if (closed) h += '<p><strong>※ 신청이 마감되었습니다. 많은 관심 감사드립니다.</strong></p>';
+    if (f.intro) h += '<p>' + lines(f.intro) + '</p>';
+    var rows = (f.details || []).filter(function(d){ return d && d.label; }).map(function(d){
+      return '<strong>' + esc(d.label) + '</strong> ' + lines(d.value);
+    });
+    if (f.deadline) rows.push('<strong>접수 마감</strong> ' + fmtDate(f.deadline) + (closed ? ' — 마감' : ''));
+    if (rows.length) h += '<p>' + rows.join('<br>') + '</p>';
+    if (f.notes) h += '<p><strong>' + esc(f.notes_title || '안내') + '</strong><br>' + lines(f.notes) + '</p>';
+    if (!closed && f.apply_url) h += '<p><a href="' + esc(f.apply_url) + '" target="_blank" rel="noopener">신청서 작성하기 →</a></p>';
+    if (f.contact_label) h += '<p>' + (f.contact_url
+      ? '<a href="' + esc(f.contact_url) + '">' + esc(f.contact_label) + '</a>' : esc(f.contact_label)) + '</p>';
+
+    return {
+      tag:   f.news_tag || '공지',
+      title: (closed ? '[마감] ' : '') + f.title,
+      date:  f.date || '',
+      image: f.image || '',
+      body:  h
+    };
+  }
+  /* 손으로 적은 소식 + 자동으로 만든 모집 소식을 합쳐 날짜 내림차순으로 */
+  function newsAll(){
+    var all = RECRUIT_ITEM ? [RECRUIT_ITEM].concat(NEWS) : NEWS.slice();
+    return all.sort(function(a, b){
+      return String(b.date || '').localeCompare(String(a.date || ''));
+    });
+  }
+
   function renderNews(tab){
-    var items = tab==='전체' ? NEWS : NEWS.filter(function(n){ return n.tag===tab; });
+    var src = newsAll();
+    var items = tab==='전체' ? src : src.filter(function(n){ return n.tag===tab; });
     list.innerHTML = items.map(function(n){
       var head = '<span class="pill teal" style="justify-self:start">'+n.tag+'</span>'+
                  '<span style="font-weight:600">'+n.title+'</span>'+
@@ -1154,27 +1232,30 @@ header{position:static !important}
   /* ══════════════════════════════════════════════════════════
      [2026-07-29] 모집 안내를 data/recruit.json 에서 읽어온다.
      읽지 못하면 아래 HTML 에 적힌 내용이 그대로 남는다(안전장치).
+     esc / lines / isClosed 는 위쪽 소식 영역에서 함께 쓴다.
      ══════════════════════════════════════════════════════════ */
-  function esc(t){
-    return String(t == null ? '' : t)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function lines(t){
-    return esc(t).split(/\n/).join('<br>');
-  }
 
   function drawRecruitCards(cards){
     var box = document.getElementById('recruitCards');
     if (!box || !cards || !cards.length) return;
-    var html = cards.map(function(c){
+    /* 마감된 카드는 뒤로 보낸다 */
+    var ordered = cards.slice().sort(function(a, b){
+      return (isClosed(a && a.deadline) ? 1 : 0) - (isClosed(b && b.deadline) ? 1 : 0);
+    });
+    var html = ordered.map(function(c){
       if (!c || !c.title) return '';
-      var border = c.highlight ? 'border:1px solid var(--teal);' : '';
-      var pill = 'pill ' + (c.color === 'amber' ? 'amber' : 'teal');
-      var period = c.period
-        ? '<small style="font-weight:600;color:var(--ink2)">' + esc(c.period) + '</small>' : '';
-      return '<article class="card" style="' + border + 'display:flex;flex-direction:column;gap:.55rem">' +
+      var closed = isClosed(c.deadline);
+      var border = (c.highlight && !closed) ? 'border:1px solid var(--teal);' : '';
+      var pill = closed ? 'pill gray' : 'pill ' + (c.color === 'amber' ? 'amber' : 'teal');
+      var badge = closed ? '모집 마감' : c.badge;
+      var periodText = c.deadline
+        ? (closed ? fmtDate(c.deadline) + ' 접수 마감됨' : '~ ' + fmtDate(c.deadline) + ' 접수')
+        : c.period;
+      var period = periodText
+        ? '<small style="font-weight:600;color:var(--ink2)">' + esc(periodText) + '</small>' : '';
+      return '<article class="card' + (closed ? ' is-closed' : '') + '" style="' + border + 'display:flex;flex-direction:column;gap:.55rem">' +
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">' +
-          '<span class="' + pill + '">' + esc(c.badge) + '</span>' + period + '</div>' +
+          '<span class="' + pill + '">' + esc(badge) + '</span>' + period + '</div>' +
         '<a href="' + esc(c.link || '#programs') + '" style="font-size:1.12rem;font-weight:700;color:var(--ink)">' +
           esc(c.title) + '</a>' +
         '<small style="margin-top:auto;color:var(--ink2);line-height:1.7">' + lines(c.desc) + '</small>' +
@@ -1189,10 +1270,18 @@ header{position:static !important}
   function drawRecruitSide(f){
     var box = document.getElementById('recruitSide');
     if (!box) return;
-    if (!f || f.show === false || !f.short_title){ box.style.display = 'none'; return; }
+    /* [2026-07-29] 마감일이 지나면 '지금 모집 중' 상자는 자동으로 사라진다.
+       (예전에는 마감 뒤에도 계속 남아 있었다) */
+    if (!f || f.show === false || !f.short_title || isClosed(f.deadline)){
+      box.style.display = 'none'; return;
+    }
     box.style.display = '';
+    var left = f.deadline
+      ? '<small style="display:block;color:var(--amber-t);font-weight:700;margin-bottom:.5rem">' +
+          fmtDate(f.deadline) + '까지 접수</small>' : '';
     box.innerHTML =
       '<h2 style="font-size:1.15rem;color:var(--teal-d);margin-bottom:.6rem">지금 모집 중</h2>' +
+      left +
       '<p style="line-height:1.75;margin-bottom:1rem"><strong>' + esc(f.short_title) + '</strong><br>' +
         lines(f.short_desc) + '</p>' +
       '<a class="btn pr" href="#news">' + esc(f.short_button || '자세히 보기') + '</a>';
@@ -1201,7 +1290,11 @@ header{position:static !important}
   function drawRecruitFeatured(f){
     var box = document.getElementById('recruitFeatured');
     if (!box) return;
-    if (!f || f.show === false || !f.title){ box.style.display = 'none'; return; }
+    var closed = f ? isClosed(f.deadline) : false;
+    /* 모집중일 때는 '지금 보여주기' 스위치를 따르고,
+       마감된 뒤에는 '마감 뒤 처리' 설정을 따른다. */
+    var hide = !f || !f.title || (closed ? f.after_deadline === 'hide' : f.show === false);
+    if (hide){ box.style.display = 'none'; return; }
     /* 이 카드는 원래 2단 격자다. display 를 비우면 격자가 풀려 사진이
        화면 폭을 다 차지하므로, 다시 보일 때는 grid 로 되돌린다. */
     box.style.display = 'grid';
@@ -1211,12 +1304,19 @@ header{position:static !important}
         '" loading="lazy" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--line)">'
       : '<div class="ph" style="min-height:20rem">' + esc(f.image_caption || '안내 포스터') + '</div>';
 
+    var rows = (f.details || []).filter(function(d){ return d && d.label; }).map(function(d){
+      return { label: d.label, value: lines(d.value) };
+    });
+    if (f.deadline){
+      rows.push({ label: '접수 마감',
+                  value: fmtDate(f.deadline) + (closed ? ' <strong>— 마감되었습니다</strong>' : '까지') });
+    }
     var dl = '';
-    if (f.details && f.details.length){
+    if (rows.length){
       dl = '<dl style="margin:0;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.4rem 1rem;font-size:1.02rem;line-height:1.7">' +
-        f.details.filter(function(d){ return d && d.label; }).map(function(d){
+        rows.map(function(d){
           return '<dt style="font-weight:700;color:var(--teal-d)">' + esc(d.label) + '</dt>' +
-                 '<dd style="margin:0">' + lines(d.value) + '</dd>';
+                 '<dd style="margin:0">' + d.value + '</dd>';
         }).join('') + '</dl>';
     }
 
@@ -1228,7 +1328,8 @@ header{position:static !important}
     }
 
     var btns = [];
-    if (f.apply_url && f.apply_label){
+    /* 마감 뒤에는 신청 버튼을 내린다. 남겨두면 마감 후에도 신청이 들어온다. */
+    if (!closed && f.apply_url && f.apply_label){
       btns.push('<a class="btn pr" href="' + esc(f.apply_url) + '" target="_blank" rel="noopener">' + esc(f.apply_label) + '</a>');
     }
     if (f.contact_url && f.contact_label){
@@ -1236,12 +1337,20 @@ header{position:static !important}
     }
     var btnRow = btns.length ? '<div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.3rem">' + btns.join('') + '</div>' : '';
 
+    var badge = closed
+      ? '<span class="pill gray">모집 마감</span>'
+      : '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>';
+    var closedNote = closed
+      ? '<div class="closed-note">※ 신청이 마감되었습니다. 많은 관심 감사드립니다.</div>' : '';
+
+    box.style.border = closed ? '1px solid var(--line)' : '1px solid var(--teal)';
     box.innerHTML = left +
       '<div style="display:flex;flex-direction:column;gap:.9rem">' +
         '<div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">' +
-          '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>' +
+          badge +
           '<small style="color:var(--ink3)">' + esc(f.date) + '</small></div>' +
-        '<h3 style="font-size:clamp(1.3rem,2vw,1.7rem)">' + esc(f.title) + '</h3>' +
+        '<h3 style="font-size:clamp(1.3rem,2vw,1.7rem)">' + (closed ? '[마감] ' : '') + esc(f.title) + '</h3>' +
+        closedNote +
         '<p style="line-height:1.8">' + lines(f.intro) + '</p>' +
         dl + notes + btnRow +
       '</div>';
@@ -1256,6 +1365,10 @@ header{position:static !important}
         drawRecruitCards(d.cards);
         drawRecruitSide(d.featured);
         drawRecruitFeatured(d.featured);
+        /* [2026-07-29] 같은 내용을 소식 목록에도 자동으로 넣는다 */
+        RECRUIT_ITEM = recruitAsNews(d.featured);
+        var on0 = document.querySelector('.tabs button.on');
+        renderNews(on0 ? on0.textContent.trim() : '전체');
         if (typeof observeAll === 'function') observeAll();
       })
       .catch(function(){ /* 못 읽으면 기존 내용 유지 */ });
