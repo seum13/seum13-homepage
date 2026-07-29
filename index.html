@@ -1235,9 +1235,31 @@ header{position:static !important}
      esc / lines / isClosed 는 위쪽 소식 영역에서 함께 쓴다.
      ══════════════════════════════════════════════════════════ */
 
-  function drawRecruitCards(cards){
+  /* [2026-07-29] '모집 안내'에 적은 내용을 홈 화면 카드 하나로도 만든다.
+     => 홈 카드 목록에 같은 모집을 또 적지 않아도 된다. */
+  function recruitAsCard(f){
+    if (!f || !f.title || f.in_cards === false) return null;
+    var closed = isClosed(f.deadline);
+    if (closed && f.after_deadline === 'hide') return null;
+    if (!closed && f.show === false) return null;
+    return {
+      badge: f.badge && f.badge !== '모집 공지' ? f.badge : '모집중',
+      color: 'amber',
+      deadline: f.deadline,
+      period: '',
+      title: f.short_title || f.title,
+      desc: f.short_desc || '',
+      link: '#news',
+      highlight: true
+    };
+  }
+
+  function drawRecruitCards(cards, featured){
     var box = document.getElementById('recruitCards');
-    if (!box || !cards || !cards.length) return;
+    if (!box) return;
+    var head = recruitAsCard(featured);
+    cards = (head ? [head] : []).concat(cards || []);
+    if (!cards.length) return;
     /* 마감된 카드는 뒤로 보낸다 */
     var ordered = cards.slice().sort(function(a, b){
       return (isClosed(a && a.deadline) ? 1 : 0) - (isClosed(b && b.deadline) ? 1 : 0);
@@ -1362,7 +1384,7 @@ header{position:static !important}
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){
         if (!d) return;
-        drawRecruitCards(d.cards);
+        drawRecruitCards(d.cards, d.featured);
         drawRecruitSide(d.featured);
         drawRecruitFeatured(d.featured);
         /* [2026-07-29] 같은 내용을 소식 목록에도 자동으로 넣는다 */
