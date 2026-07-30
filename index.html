@@ -254,6 +254,35 @@ html{scroll-padding-top:7rem}
 .btn.soon{background:#ECEAE4;color:#5C6663;cursor:default;box-shadow:none}
 body.hc .card.is-soon{background:#EFEDE6}
 body.hc .btn.soon{background:#DDD9D1;color:#212E2B}
+
+/* [2026-07-30] 소식 화면 '모집 공지' 카드 — 요약만 보이고 상세는 접는다.
+   예전에는 큰 포스터 + 상세 안내가 전부 펼쳐져 있어서
+   그 아래 소식 목록을 보려면 화면을 두 번 넘게 내려야 했다. */
+#recruitFeatured{display:block;padding:1.5rem;transition:box-shadow .3s}
+#recruitFeatured:hover{transform:none}
+.rf-top{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:1.3rem;align-items:start}
+.rf-top.no-thumb{grid-template-columns:minmax(0,1fr)}
+.rf-thumb{width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block}
+.rf-main{display:flex;flex-direction:column;gap:.55rem}
+.rf-meta{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.rf-title{font-size:clamp(1.15rem,1.7vw,1.4rem);line-height:1.5}
+.rf-sum{color:var(--ink2);line-height:1.7}
+.rf-key{font-weight:700;color:var(--amber-t)}
+.rf-btns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.rf-more{margin-top:1.1rem;border-top:1px solid var(--line)}
+.rf-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.45rem;min-height:2.9rem;font-weight:700;color:var(--teal-d)}
+.rf-more>summary::-webkit-details-marker{display:none}
+.rf-more>summary::after{content:'⌄';font-size:1.15rem;line-height:1;transition:transform .25s}
+.rf-more[open]>summary::after{transform:rotate(180deg)}
+.rf-more>summary:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:10px}
+.rf-body{padding-bottom:.4rem;display:flex;flex-direction:column;gap:1rem;line-height:1.8}
+.rf-poster{width:100%;max-width:26rem;height:auto;border-radius:12px;border:1px solid var(--line)}
+#recruitFeatured.flash{box-shadow:0 0 0 4px var(--amber)}
+@media(max-width:640px){
+  #recruitFeatured{padding:1.2rem}
+  .rf-top{grid-template-columns:5rem minmax(0,1fr);gap:.9rem}
+  .rf-btns .btn{flex:1 1 8rem;justify-content:center;text-align:center}
+}
 </style>
 <noscript><style>
 /* [2026-07-27] 자바스크립트가 꺼져 있어도 6개 화면 내용이 모두 보이게 */
@@ -840,8 +869,8 @@ header{position:static !important}
     </div>
     <div style="background:var(--amber-l);border-radius:16px;padding:1.75rem" id="recruitSide">
       <h2 style="font-size:1.15rem;color:var(--teal-d);margin-bottom:.6rem">지금 모집 중</h2>
-      <p style="line-height:1.75;margin-bottom:1rem"><strong>직무지도원 실무교육</strong><br>7월 30일(목)까지 선착순 20명. 7월 31일(금) 오후 2시, 대구 사회적경제지원센터.</p>
-      <a class="btn pr" href="#news">교육 안내 보기</a>
+      <p style="line-height:1.75;margin-bottom:1rem"><strong>ON AIR: 규칙을 찾아라! 참여 청년 모집</strong><br>경계선지능 청년 10명 · 8월 22일(토)까지 접수 · 매주 토요일 경북대학교미술관.</p>
+      <a class="btn pr" id="recruitSideBtn" href="#news">프로그램 안내 보기</a>
     </div>
   </div>
 
@@ -857,26 +886,34 @@ header{position:static !important}
       <button type="button" data-tab="언론보도">언론보도</button>
     </div>
 
-    <article class="card" data-reveal id="recruitFeatured" style="border:1px solid var(--teal);box-shadow:var(--sh);padding:2rem;display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1fr);gap:2rem;align-items:start;margin-bottom:1.25rem">
-      <div class="ph" style="min-height:20rem">직무지도원 실무교육 안내 포스터</div>
-      <div style="display:flex;flex-direction:column;gap:.9rem">
-        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap"><span class="pill amber">모집 공지</span><small style="color:var(--ink3)">2026.07.26</small></div>
-        <h3 style="font-size:clamp(1.3rem,2vw,1.7rem)">경계선지능 청년의 일경험 동반자, ‘직무지도원’ 실무교육 참가자를 모집합니다</h3>
-        <p style="line-height:1.8">경계선지능인의 특성과 실제 직무지도 사례를 바탕으로 한 2시간 실무교육입니다. 한국경계선지능연구학회가 주최·주관하고 교육협동조합 세움이 사업지원으로 참여합니다. 참가 인원은 <strong>7월 30일(목)까지 선착순 20명</strong>으로 제한합니다.</p>
-        <dl style="margin:0;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.4rem 1rem;font-size:1.02rem;line-height:1.7">
-          <dt style="font-weight:700;color:var(--teal-d)">일시</dt><dd style="margin:0">2026년 7월 31일(금) 오후 2시 ~ 4시</dd>
-          <dt style="font-weight:700;color:var(--teal-d)">장소</dt><dd style="margin:0">대구광역시 사회적경제지원센터 4층 혁신홀 <small style="color:var(--ink2)">(대구 중구 중앙대로 402)</small></dd>
-          <dt style="font-weight:700;color:var(--teal-d)">주최·주관</dt><dd style="margin:0">한국경계선지능연구학회 <small style="color:var(--ink2)">· 사업지원 교육협동조합 세움</small></dd>
-        </dl>
-        <div style="background:var(--teal-l);border-radius:14px;padding:1.1rem 1.3rem">
-          <strong style="color:var(--teal-d)">교육 내용</strong>
-          <ol style="margin:.4rem 0 0;padding-left:1.3rem;line-height:1.75"><li>직장 정착과 직무지도원의 역할 — 경계선지능인의 직장 적응 과정과 특성</li><li>중점 지원 내용</li><li>직무지도의 원칙, 일지 및 평가 기록지 작성</li></ol>
-        </div>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
-          <a class="btn pr" target="_blank" rel="noopener" href="https://form.naver.com/response/HU32LMQCqm3">신청서 작성하기 →</a>
-          <a class="btn sec-b" href="tel:070-7792-0179">참가문의 070-7792-0179</a>
+    <!-- [2026-07-30] 요약만 보이는 카드. 상세는 '자세한 안내 보기'로 접어 둔다.
+         아래 내용은 data/recruit.json 을 못 읽을 때만 쓰이는 안전장치다. -->
+    <article class="card" data-reveal id="recruitFeatured" style="border:1px solid var(--teal);box-shadow:var(--sh);margin-bottom:1.25rem">
+      <div class="rf-top">
+        <img class="rf-thumb" src="images/poster-onair-knu-artmuseum.jpg" alt="〈ON AIR: 규칙을 찾아라!〉 포스터" loading="lazy">
+        <div class="rf-main">
+          <div class="rf-meta"><span class="pill amber">모집 공지</span><small style="color:var(--ink3)">2026.07.30</small></div>
+          <h3 class="rf-title">경북대 미술관 〈표준 사용법〉 연계 ‘ON AIR: 규칙을 찾아라!’ 참여 청년 모집</h3>
+          <p class="rf-sum">경계선지능 청년 10명 모집 · 매주 토요일 5회 · 경북대학교미술관</p>
+          <p class="rf-key">2026년 8월 22일(토)까지 접수</p>
         </div>
       </div>
+      <div class="rf-btns">
+        <a class="btn pr" target="_blank" rel="noopener" href="https://forms.gle/R5AeGu1p4mND6sJAA">신청서 작성하기 →</a>
+        <a class="btn sec-b" href="tel:053-795-2013">문의 053-795-2013</a>
+      </div>
+      <details class="rf-more">
+        <summary>자세한 안내 보기</summary>
+        <div class="rf-body">
+          <p>경북대학교 미술관에서 8월 22일부터 5주 동안 열리는 전시 연계 프로그램에 함께할 청년 10명을 모집합니다.</p>
+          <dl style="margin:0;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.4rem 1rem;line-height:1.7">
+            <dt style="font-weight:700;color:var(--teal-d)">일정</dt><dd style="margin:0">2026년 8월 22일(토) ~ 9월 19일(토) · 매주 토요일 · 총 5회</dd>
+            <dt style="font-weight:700;color:var(--teal-d)">시간</dt><dd style="margin:0">오후 2시 ~ 4시 (회당 2시간)</dd>
+            <dt style="font-weight:700;color:var(--teal-d)">장소</dt><dd style="margin:0">경북대학교 미술관 전시실 · 교육실</dd>
+            <dt style="font-weight:700;color:var(--teal-d)">참가비</dt><dd style="margin:0">없음</dd>
+          </dl>
+        </div>
+      </details>
     </article>
 
     <ul id="newsList" style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem"></ul>
@@ -1166,6 +1203,20 @@ header{position:static !important}
   /* [2026-07-29] '모집 안내'에 적은 내용을 소식 항목 하나로 바꾼다.
      소식 목록에 자동으로 들어가므로 같은 내용을 두 번 적지 않아도 된다. */
   var RECRUIT_ITEM = null;
+  /* [2026-07-30] 모집 공지 카드는 '전체'와 자기 태그(기본 '공지') 탭에서만 보인다.
+     예전에는 네 탭 모두에 카드가 나와서, 세움소식·언론보도를 보려 해도
+     관계없는 모집 안내를 지나 한참 내려가야 했다.
+     아래 두 값은 data/recruit.json 을 못 읽을 때를 대비해
+     화면에 이미 적혀 있는 안전장치 카드의 값(보임·공지)으로 시작한다. */
+  var RECRUIT_OK  = true;
+  var RECRUIT_TAG = '공지';
+  function applyRecruitTab(tab){
+    var box = document.getElementById('recruitFeatured');
+    if (!box) return;
+    var show = RECRUIT_OK && (tab === '전체' || tab === RECRUIT_TAG);
+    box.style.display = show ? '' : 'none';
+  }
+
   function recruitAsNews(f){
     if (!f || !f.title || f.in_news === false) return null;
     var closed = isClosed(f.deadline);
@@ -1214,6 +1265,7 @@ header{position:static !important}
              '<div class="newsli-body">'+body+'</div></details></li>';
     }).join('');
     total.textContent = items.length;
+    applyRecruitTab(tab);   /* [2026-07-30] 탭에 맞춰 모집 공지 카드를 보이거나 감춘다 */
   }
 
   /* [2026-07-29] 소식에 붙인 사진. 없으면 빈 문자열. */
@@ -1312,9 +1364,51 @@ header{position:static !important}
       left +
       '<p style="line-height:1.75;margin-bottom:1rem"><strong>' + esc(f.short_title) + '</strong><br>' +
         lines(f.short_desc) + '</p>' +
-      '<a class="btn pr" href="#news">' + esc(f.short_button || '자세히 보기') + '</a>';
+      '<a class="btn pr" id="recruitSideBtn" href="#news">' + esc(f.short_button || '자세히 보기') + '</a>';
+    bindRecruitSideBtn();
   }
 
+  /* [2026-07-30] '프로그램 안내 보기' 버튼이 눌리지 않던 문제.
+     이 버튼은 href 가 '#news' 였는데, 버튼 자체가 이미 소식 화면 안에 있어서
+     주소가 그대로였다 => hashchange 가 안 일어나 아무 반응이 없었다.
+     이제는 같은 화면 아래에 있는 모집 안내 카드로 직접 내려간다. */
+  function bindRecruitSideBtn(){
+    var btn = document.getElementById('recruitSideBtn');
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      goRecruitDetail();
+    });
+  }
+
+  function goRecruitDetail(){
+    var box = document.getElementById('recruitFeatured');
+    if (!box) return;
+    /* 카드가 숨겨지는 탭(세움소식·언론보도)에 있으면 '전체' 탭으로 돌려놓는다 */
+    var on = document.querySelector('.tabs button.on');
+    var cur = on ? on.getAttribute('data-tab') : '전체';
+    if (cur !== '전체' && cur !== RECRUIT_TAG){
+      var all = document.querySelector('.tabs button[data-tab="전체"]');
+      if (all) all.click();
+    }
+    if (box.style.display === 'none') return;   /* 마감 등으로 카드가 아예 없는 경우 */
+    var more = box.querySelector('.rf-more');
+    if (more) more.open = true;                 /* 상세 안내를 펼친 채로 보여준다 */
+    box.classList.add('is-on');                 /* 아직 안 나타났으면 바로 보이게 */
+    var hd  = document.querySelector('header');
+    var off = (hd ? hd.getBoundingClientRect().height : 0) + 16;
+    var y   = box.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
+    if (y < 0) y = 0;
+    try { window.scrollTo({top:y, left:0, behavior:'smooth'}); }
+    catch(_){ window.scrollTo(0, y); }
+    box.classList.add('flash');
+    setTimeout(function(){ box.classList.remove('flash'); }, 1600);
+  }
+
+  /* [2026-07-30] 모집 공지 카드를 '요약 + 접은 상세'로 바꿨다.
+     예전에는 큰 포스터와 모든 안내가 한 번에 펼쳐져 있어
+     그 아래 소식 목록을 보려면 화면을 두 번 넘게 내려야 했다. */
   function drawRecruitFeatured(f){
     var box = document.getElementById('recruitFeatured');
     if (!box) return;
@@ -1322,16 +1416,49 @@ header{position:static !important}
     /* 모집중일 때는 '지금 보여주기' 스위치를 따르고,
        마감된 뒤에는 '마감 뒤 처리' 설정을 따른다. */
     var hide = !f || !f.title || (closed ? f.after_deadline === 'hide' : f.show === false);
+    RECRUIT_OK  = !hide;
+    RECRUIT_TAG = (f && f.news_tag) || '공지';
     if (hide){ box.style.display = 'none'; return; }
-    /* 이 카드는 원래 2단 격자다. display 를 비우면 격자가 풀려 사진이
-       화면 폭을 다 차지하므로, 다시 보일 때는 grid 로 되돌린다. */
-    box.style.display = 'grid';
+    box.style.display = '';
 
-    var left = f.image
-      ? '<img src="' + esc(f.image) + '" alt="' + esc(f.image_caption || f.title) +
-        '" loading="lazy" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--line)">'
-      : '<div class="ph" style="min-height:20rem">' + esc(f.image_caption || '안내 포스터') + '</div>';
+    /* ── 접었을 때 보이는 요약 ── */
+    var thumb = f.image
+      ? '<img class="rf-thumb" src="' + esc(f.image) + '" alt="' + esc(f.image_caption || f.title) +
+        '" loading="lazy">' : '';
+    var badge = closed
+      ? '<span class="pill gray">모집 마감</span>'
+      : '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>';
+    var keyText = f.deadline
+      ? (closed ? fmtDate(f.deadline) + ' 접수 마감됨' : fmtDate(f.deadline) + '까지 접수')
+      : '상시 모집';
+    /* 요약 한 줄: 짧은 소개가 있으면 그것을, 없으면 본문 첫 문단을 쓴다 */
+    var sumText = f.short_desc || String(f.intro || '').split(/\n\s*\n/)[0] || '';
 
+    var btns = [];
+    /* 마감 뒤에는 신청 버튼을 내린다. 남겨두면 마감 후에도 신청이 들어온다. */
+    if (!closed && f.apply_url && f.apply_label){
+      btns.push('<a class="btn pr" href="' + esc(f.apply_url) + '" target="_blank" rel="noopener">' + esc(f.apply_label) + '</a>');
+    }
+    if (f.contact_url && f.contact_label){
+      btns.push('<a class="btn sec-b" href="' + esc(f.contact_url) + '">' + esc(f.contact_label) + '</a>');
+    }
+    var btnRow = btns.length ? '<div class="rf-btns">' + btns.join('') + '</div>' : '';
+    var closedNote = closed
+      ? '<div class="closed-note">※ 신청이 마감되었습니다. 많은 관심 감사드립니다.</div>' : '';
+
+    var top =
+      '<div class="rf-top' + (thumb ? '' : ' no-thumb') + '">' + thumb +
+        '<div class="rf-main">' +
+          '<div class="rf-meta">' + badge +
+            '<small style="color:var(--ink3)">' + esc(f.date) + '</small></div>' +
+          '<h3 class="rf-title">' + (closed ? '[마감] ' : '') + esc(f.title) + '</h3>' +
+          closedNote +
+          (sumText ? '<p class="rf-sum">' + lines(sumText) + '</p>' : '') +
+          '<p class="rf-key">' + esc(keyText) + '</p>' +
+        '</div>' +
+      '</div>' + btnRow;
+
+    /* ── 펼쳤을 때 보이는 상세 ── */
     var rows = (f.details || []).filter(function(d){ return d && d.label; }).map(function(d){
       return { label: d.label, value: lines(d.value) };
     });
@@ -1347,41 +1474,25 @@ header{position:static !important}
                  '<dd style="margin:0">' + d.value + '</dd>';
         }).join('') + '</dl>';
     }
-
     var notes = '';
     if (f.notes){
       notes = '<div style="background:var(--teal-l);border-radius:14px;padding:1.1rem 1.3rem">' +
         (f.notes_title ? '<strong style="display:block;color:var(--teal-d);margin-bottom:.5rem">' + esc(f.notes_title) + '</strong>' : '') +
         '<div style="line-height:1.8">' + lines(f.notes) + '</div></div>';
     }
-
-    var btns = [];
-    /* 마감 뒤에는 신청 버튼을 내린다. 남겨두면 마감 후에도 신청이 들어온다. */
-    if (!closed && f.apply_url && f.apply_label){
-      btns.push('<a class="btn pr" href="' + esc(f.apply_url) + '" target="_blank" rel="noopener">' + esc(f.apply_label) + '</a>');
-    }
-    if (f.contact_url && f.contact_label){
-      btns.push('<a class="btn" href="' + esc(f.contact_url) + '" style="background:var(--surface);border:1px solid var(--line);color:var(--ink)">' + esc(f.contact_label) + '</a>');
-    }
-    var btnRow = btns.length ? '<div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.3rem">' + btns.join('') + '</div>' : '';
-
-    var badge = closed
-      ? '<span class="pill gray">모집 마감</span>'
-      : '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>';
-    var closedNote = closed
-      ? '<div class="closed-note">※ 신청이 마감되었습니다. 많은 관심 감사드립니다.</div>' : '';
+    var poster = f.image
+      ? '<img class="rf-poster" src="' + esc(f.image) + '" alt="' + esc(f.image_caption || f.title) + '" loading="lazy">' : '';
+    var intro = f.intro ? '<div>' + lines(f.intro) + '</div>' : '';
+    var detail = intro + dl + notes + poster;
 
     box.style.border = closed ? '1px solid var(--line)' : '1px solid var(--teal)';
-    box.innerHTML = left +
-      '<div style="display:flex;flex-direction:column;gap:.9rem">' +
-        '<div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">' +
-          badge +
-          '<small style="color:var(--ink3)">' + esc(f.date) + '</small></div>' +
-        '<h3 style="font-size:clamp(1.3rem,2vw,1.7rem)">' + (closed ? '[마감] ' : '') + esc(f.title) + '</h3>' +
-        closedNote +
-        '<p style="line-height:1.8">' + lines(f.intro) + '</p>' +
-        dl + notes + btnRow +
-      '</div>';
+    box.innerHTML = top +
+      (detail ? '<details class="rf-more"><summary>자세한 안내 보기</summary>' +
+                '<div class="rf-body">' + detail + '</div></details>' : '');
+
+    /* 지금 눌러 둔 탭에 맞춰 다시 보이거나 감춘다 */
+    var on = document.querySelector('.tabs button.on');
+    applyRecruitTab(on ? on.getAttribute('data-tab') : '전체');
   }
 
   (function loadRecruit(){
@@ -1421,6 +1532,7 @@ header{position:static !important}
       .catch(function(){ /* 못 읽으면 기존 목록 유지 */ });
   })();
   renderNews('전체');
+  bindRecruitSideBtn();   /* [2026-07-30] 모집 자료를 못 읽었을 때의 안전장치 버튼도 눌리게 */
   document.querySelectorAll('.tabs button').forEach(function(b){
     b.addEventListener('click', function(){
       document.querySelectorAll('.tabs button').forEach(function(x){ x.classList.remove('on'); });
