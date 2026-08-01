@@ -283,6 +283,46 @@ body.hc .btn.soon{background:#DDD9D1;color:#212E2B}
   .rf-top{grid-template-columns:5rem minmax(0,1fr);gap:.9rem}
   .rf-btns .btn{flex:1 1 8rem;justify-content:center;text-align:center}
 }
+/* [2026-07-31] 메일 보내는 곳 고르기 시트
+   mailto: 링크는 방문자 컴퓨터에 기본 메일 프로그램이 등록돼 있어야만 열린다.
+   웹메일(네이버·구글)만 쓰는 방문자가 누르면 아무 반응이 없어서,
+   누르면 어디서 쓸지 고르는 창을 띄우고 웹메일은 새 탭으로 열어 준다. */
+.msheet{position:fixed;inset:0;z-index:200;display:none}
+.msheet.on{display:block}
+.msheet-bg{position:absolute;inset:0;background:rgba(24,42,32,.45)}
+.msheet-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(30rem,calc(100vw - 2rem));max-height:calc(100vh - 2rem);overflow:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:1.1rem;
+  box-shadow:0 12px 40px rgba(24,42,32,.22);padding:1.5rem 1.4rem 1.2rem}
+.msheet-t{margin:0 0 .5rem;font-size:1.2rem;line-height:1.5}
+.msheet-info{margin:0 0 1.1rem;font-size:.95rem;color:var(--ink2);line-height:1.7;
+  background:var(--bg);border-radius:.7rem;padding:.7rem .85rem;word-break:break-all}
+.msheet-opts{display:flex;flex-direction:column;gap:.55rem}
+.msheet-opt{display:flex;align-items:center;gap:.6rem;width:100%;min-height:3.2rem;
+  padding:.6rem 1rem;border:1px solid var(--line);border-radius:.9rem;background:var(--surface);
+  font:inherit;font-size:1.02rem;font-weight:700;color:var(--ink);text-align:left;cursor:pointer}
+.msheet-opt:hover{background:var(--teal-l);border-color:var(--teal)}
+.msheet-opt:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.msheet-note{margin:1rem 0 0;font-size:.88rem;color:var(--ink3);line-height:1.7}
+.msheet-x{margin-top:.9rem;width:100%;min-height:3rem;border:0;border-radius:.9rem;
+  background:var(--bg);font:inherit;font-size:1rem;font-weight:700;color:var(--ink2);cursor:pointer}
+.msheet-x:hover{background:#EFEDE6}
+.msheet-x:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.msheet-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.msheet-done{margin:.7rem 0 0;font-size:.95rem;font-weight:700;color:var(--teal-d);min-height:1.4rem}
+body.hc .msheet-box{border-color:#556662;border-width:2px}
+body.hc .msheet-opt{border-color:#556662}
+body.hc .msheet-x{background:#EFEDE6;color:#212E2B}
+@media(max-width:520px){
+  .msheet-box{top:auto;bottom:0;left:0;transform:none;width:100%;max-height:88vh;
+    border-radius:1.1rem 1.1rem 0 0}
+}
+@media(prefers-reduced-motion:no-preference){
+  .msheet.on .msheet-box{animation:msIn .18s ease-out}
+  @keyframes msIn{from{opacity:0;transform:translate(-50%,-46%)}}
+  @media(max-width:520px){.msheet.on .msheet-box{animation:msUp .2s ease-out}
+    @keyframes msUp{from{transform:translateY(12px);opacity:0}}}
+}
 </style>
 <noscript><style>
 /* [2026-07-27] 자바스크립트가 꺼져 있어도 6개 화면 내용이 모두 보이게 */
@@ -855,7 +895,7 @@ header{position:static !important}
       <a class="card lift" href="mailto:seum13@naver.com?subject=[세움] 중소기업 확인서%20요청&body=요청 자료: 중소기업(소기업) 확인서%0D%0A기관·성함: %0D%0A회신 받을 메일: %0D%0A">✉️ <strong style="display:block;margin:.4rem 0 .2rem;color:var(--ink)">중소기업(소기업) 확인서</strong><small style="color:var(--ink2)">메일로 요청하기</small></a>
       <a class="card lift" href="mailto:seum13@naver.com?subject=[세움] 여성기업 확인서%20요청&body=요청 자료: 여성기업 확인서%0D%0A기관·성함: %0D%0A회신 받을 메일: %0D%0A">✉️ <strong style="display:block;margin:.4rem 0 .2rem;color:var(--ink)">여성기업 확인서</strong><small style="color:var(--ink2)">유효기간 2024–2027 · 메일로 요청하기</small></a>
     </div>
-    <p style="margin-top:1.2rem;color:var(--ink2)">연간 활동보고서는 현재 준비 중이라 요청을 받지 않고 있습니다. 나머지 자료는 버튼을 누르면 요청 메일이 자동으로 작성됩니다. 보내주시면 <strong>2일(평일 기준) 안에</strong> 회신드립니다. 목록에 없는 서류도 <a href="mailto:seum13@naver.com">seum13@naver.com</a>으로 편히 요청해 주세요.</p>
+    <p style="margin-top:1.2rem;color:var(--ink2)">연간 활동보고서는 현재 준비 중이라 요청을 받지 않고 있습니다. 나머지 자료는 버튼을 누르면 요청 메일의 제목과 내용이 채워집니다. 보내주시면 <strong>2일(평일 기준) 안에</strong> 회신드립니다. 목록에 없는 서류도 <a href="mailto:seum13@naver.com">seum13@naver.com</a>으로 편히 요청해 주세요.</p>
   </div>
 </section>
 
@@ -1003,7 +1043,8 @@ header{position:static !important}
         ============================================================ -->
 
         <div>
-          <p style="margin:0 0 .9rem;font-weight:700">용건을 고르면 메일이 자동으로 작성됩니다</p>
+          <p style="margin:0 0 .9rem;font-weight:700">용건을 고르면 메일 제목과 내용이 채워집니다</p>
+          <p style="margin:0 0 .9rem;font-size:.95rem;color:var(--ink2);line-height:1.7">네이버 메일, 구글 메일, 내 컴퓨터 메일 프로그램 중에서 고르실 수 있습니다.</p>
           <div style="display:flex;gap:.7rem;flex-wrap:wrap">
             <a class="btn" href="mailto:seum13@naver.com?subject=[세움] 교육 참여 문의&body=성함: %0D%0A연락처: %0D%0A문의 내용: %0D%0A" style="background:var(--surface);border:1px solid var(--line);color:var(--ink)">✉️ 교육 참여</a>
             <a class="btn" href="mailto:seum13@naver.com?subject=[세움] 단체·학급 교육 신청&body=기관·학교명: %0D%0A담당자 성함: %0D%0A연락처: %0D%0A희망 시기·인원: %0D%0A" style="background:var(--surface);border:1px solid var(--line);color:var(--ink)">✉️ 단체·학급 교육</a>
@@ -1558,6 +1599,166 @@ setTimeout(function(){
     document.head.appendChild(st);
   }
 }, 3000);
+</script>
+<script>
+/* [2026-07-31] mailto: 링크를 눌러도 아무 일이 안 일어나던 문제 해결.
+   원인 — mailto: 는 홈페이지가 메일을 여는 게 아니라 방문자 컴퓨터에 등록된
+   기본 메일 프로그램을 부르는 방식이다. 웹메일만 쓰는 사람에게는 부를 대상이
+   없어서 오류 메시지도 없이 그냥 아무 반응이 없다.
+   해결 — 누르면 '어디서 쓸지' 고르는 창을 띄우고, 네이버·구글 메일은 새 탭으로
+   연다. href 는 그대로 두었으므로 자바스크립트가 꺼져 있으면 예전처럼 동작한다.
+   이 블록은 독립 스크립트라 여기서 오류가 나도 나머지 화면은 멀쩡하다. */
+(function(){
+  'use strict';
+  if(!document.querySelector || !window.addEventListener) return;
+
+  var sheet, box, elInfo, elOpts, elDone, lastFocus, cur;
+
+  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function enc(t){ return encodeURIComponent(t == null ? '' : t); }
+
+  /* 브라우저가 정규화한 a.href 를 읽어 to / 제목 / 본문으로 나눈다 */
+  function parseMailto(a){
+    var h = a.href.replace(/^mailto:/i, ''), q = h.indexOf('?');
+    var out = { to:'', subject:'', body:'' };
+    try{ out.to = decodeURIComponent(q < 0 ? h : h.slice(0, q)); }
+    catch(e){ out.to = (q < 0 ? h : h.slice(0, q)); }
+    if(q >= 0){
+      h.slice(q + 1).split('&').forEach(function(p){
+        var i = p.indexOf('='); if(i < 0) return;
+        var k = p.slice(0, i).toLowerCase(), v = p.slice(i + 1);
+        try{ v = decodeURIComponent(v); }catch(e){}
+        if(k === 'subject') out.subject = v;
+        else if(k === 'body') out.body = v;
+      });
+    }
+    return out;
+  }
+
+  function plainText(m){
+    var t = '받는 사람: ' + m.to + '\n';
+    if(m.subject) t += '제목: ' + m.subject + '\n';
+    if(m.body) t += '\n' + m.body.replace(/\r\n/g, '\n');
+    return t;
+  }
+
+  function copyText(t, ok){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){ ok(true); }, function(){ ok(fallback(t)); });
+    } else { ok(fallback(t)); }
+  }
+  function fallback(t){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+      var okd = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return okd;
+    }catch(e){ return false; }
+  }
+
+  function build(){
+    sheet = document.createElement('div');
+    sheet.className = 'msheet';
+    sheet.innerHTML =
+      '<div class="msheet-bg" data-ms-close></div>' +
+      '<div class="msheet-box" role="dialog" aria-modal="true" aria-labelledby="msheetT">' +
+        '<h2 class="msheet-t" id="msheetT">어떤 방법으로 메일을 쓸까요?</h2>' +
+        '<p class="msheet-info"></p>' +
+        '<div class="msheet-opts"></div>' +
+        '<p class="msheet-done" role="status" aria-live="polite"></p>' +
+        '<p class="msheet-note">네이버·구글 메일은 그 계정에 로그인되어 있어야 열립니다. ' +
+          '제목과 내용이 비어 있으면 <strong>내용 복사하기</strong>를 누른 뒤 붙여넣어 주세요.</p>' +
+        '<button type="button" class="msheet-x" data-ms-close>닫기</button>' +
+      '</div>';
+    document.body.appendChild(sheet);
+    box = sheet.querySelector('.msheet-box');
+    elInfo = sheet.querySelector('.msheet-info');
+    elOpts = sheet.querySelector('.msheet-opts');
+    elDone = sheet.querySelector('.msheet-done');
+
+    sheet.addEventListener('click', function(e){
+      if(e.target.hasAttribute && e.target.hasAttribute('data-ms-close')) close();
+    });
+    document.addEventListener('keydown', function(e){
+      if(!sheet.classList.contains('on')) return;
+      if(e.key === 'Escape'){ close(); return; }
+      if(e.key === 'Tab'){
+        var f = box.querySelectorAll('button');
+        if(!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
+  function addOpt(label, fn){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'msheet-opt'; b.innerHTML = label;
+    b.addEventListener('click', fn);
+    elOpts.appendChild(b);
+    return b;
+  }
+
+  function openTab(url){
+    /* window.open 의 세 번째 인자에 'noopener' 를 주면 반환값이 항상 null 이라
+       "창이 막혔다"고 잘못 판단한다. 열고 나서 opener 를 끊는 방식으로 처리. */
+    var w = window.open(url, '_blank');
+    if(w){ try{ w.opener = null; }catch(e){} close(); }
+    else elDone.textContent = '새 창이 막혀 있습니다. 아래 내용 복사하기를 눌러 주세요.';
+  }
+
+  function open(m, href){
+    if(!sheet) build();
+    cur = m;
+    elDone.textContent = '';
+    elInfo.innerHTML = '받는 사람 <strong>' + esc(m.to) + '</strong>' +
+      (m.subject ? '<br>제목 <strong>' + esc(m.subject) + '</strong>' : '');
+    elOpts.innerHTML = '';
+
+    addOpt('네이버 메일로 쓰기 <span style="font-weight:400;color:var(--ink3)">(새 창)</span>', function(){
+      openTab('https://mail.naver.com/write/popup/?to=' + enc(m.to) +
+              '&subject=' + enc(m.subject) + '&body=' + enc(m.body));
+    });
+    addOpt('구글 메일(Gmail)로 쓰기 <span style="font-weight:400;color:var(--ink3)">(새 창)</span>', function(){
+      openTab('https://mail.google.com/mail/?view=cm&fs=1&to=' + enc(m.to) +
+              '&su=' + enc(m.subject) + '&body=' + enc(m.body));
+    });
+    addOpt('내 컴퓨터 메일 프로그램으로 쓰기', function(){
+      elDone.textContent = '메일 프로그램을 부르는 중입니다. 아무 창도 안 열리면 위의 웹메일이나 내용 복사하기를 써 주세요.';
+      window.location.href = href;
+    });
+    addOpt(m.subject ? '내용 복사하기' : '메일 주소 복사하기', function(){
+      copyText(m.subject ? plainText(m) : m.to, function(ok){
+        elDone.textContent = ok
+          ? (m.subject ? '복사했습니다. 메일 쓰는 곳에 붙여넣어 주세요.' : '메일 주소를 복사했습니다.')
+          : '복사가 안 됐습니다. 위의 내용을 직접 적어 주세요.';
+      });
+    });
+
+    lastFocus = document.activeElement;
+    sheet.classList.add('on');
+    var f = elOpts.querySelector('button');
+    if(f) f.focus();
+  }
+
+  function close(){
+    if(!sheet) return;
+    sheet.classList.remove('on');
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href^="mailto:"]') : null;
+    if(!a) return;
+    if(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    e.preventDefault();
+    open(parseMailto(a), a.href);
+  });
+})();
 </script>
 </body>
 </html>
