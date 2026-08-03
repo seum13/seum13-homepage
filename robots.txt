@@ -9,4 +9,7 @@ Allow: /
 User-agent: Daum
 Allow: /
 
+# 관리자 화면은 색인하지 않음
+Disallow: /admin/
+
 Sitemap: https://seum13.com/sitemap.xml
