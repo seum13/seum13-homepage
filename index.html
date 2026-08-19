@@ -350,7 +350,7 @@ header{position:static !important}
   },
   "areaServed": "대구광역시",
   "knowsAbout": ["경계선지능", "느린학습자", "청년 진로교육", "청년 자립"],
-  "sameAs": ["https://www.instagram.com/seum_coop"]
+  "sameAs": ["https://www.instagram.com/seum_coop", "https://blog.naver.com/seum13"]
 }
 </script>
 </head>
@@ -939,7 +939,7 @@ header{position:static !important}
   <div class="wrap sec">
     <div style="display:flex;align-items:flex-end;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.2rem">
       <h2 class="h-sec">공지 · 세움소식</h2>
-      <small style="margin-left:auto;color:var(--ink2)">전체 <span id="newsTotal"></span>건</small>
+      <small style="margin-left:auto;color:var(--ink2)"><span id="newsScope">전체</span> <span id="newsTotal"></span>건</small>
     </div>
     <div class="tabs" role="group" aria-label="소식 분류 고르기" style="margin-bottom:1.4rem">
       <button type="button" class="on" data-tab="전체">전체</button>
@@ -1105,7 +1105,7 @@ header{position:static !important}
 </main>
 
 <footer>
-  <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:2rem">
+  <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr));gap:2rem">
     <div>
       <strong style="font-size:1.15rem">교육협동조합 세움 <small style="font-weight:500;color:#BFDAD6">SEUM Education Cooperative</small></strong>
       <p style="margin-top:.6rem">대구광역시 수성구 유니버시아드로 66-32<br>TEL 070-7792-0179 · 문의 053-795-2013<br>seum13@naver.com<br>대표 박호일 · 사업자등록번호 502-86-31380</p>
@@ -1117,6 +1117,10 @@ header{position:static !important}
     <div style="display:flex;flex-direction:column;gap:.45rem">
       <span class="cap">자료 내려받기</span>
       <a href="mailto:seum13@naver.com?subject=[세움] 사회적기업 인증서%20요청&body=요청 자료: 사회적기업 인증서(고용노동부)%0D%0A기관·성함: %0D%0A회신 받을 메일: %0D%0A">사회적기업 인증서 (메일 요청)</a><a href="#about">전체 연혁</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.45rem">
+      <span class="cap">소식 채널</span>
+      <a href="https://blog.naver.com/seum13" target="_blank" rel="noopener noreferrer">네이버 블로그</a><a href="https://www.instagram.com/seum_coop" target="_blank" rel="noopener noreferrer">인스타그램</a>
     </div>
   </div>
   <div class="wrap"><p style="margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.25);font-size:.92rem;color:#BFDAD6">© 2026 교육협동조합 세움 · 고용노동부 인증 사회적기업 · 든든한 우리사이 지기</p></div>
@@ -1251,14 +1255,7 @@ header{position:static !important}
      body:'<p>경계선지능인의 특성과 실제 직무지도 사례를 바탕으로 한 2시간 실무교육입니다. 한국경계선지능연구학회가 주최·주관하고 교육협동조합 세움이 사업지원으로 참여합니다.</p>'+
           '<p><strong>일시</strong> 2026년 7월 31일(금) 오후 2시~4시<br><strong>장소</strong> 대구광역시 사회적경제지원센터 4층 혁신홀 (대구 중구 중앙대로 402)<br><strong>정원</strong> 7월 30일(목)까지 선착순 20명</p>'+
           '<p><strong>교육 내용</strong><br>1. 직장 정착과 직무지도원의 역할 — 경계선지능인의 직장 적응 과정과 특성<br>2. 중점 지원 내용<br>3. 직무지도의 원칙, 일지 및 평가 기록지 작성</p>'+
-          '<p>참가문의 <a href="tel:070-7792-0179">070-7792-0179</a></p>'},
-    {tag:'공지', title:'2026년 하반기 경계선지능 청년 진로·자립 과정 참가자 모집 (8월 22일까지)', date:'2026.07.14'},
-    {tag:'세움소식', title:'동물교감 교육 ‘RE:Dog’ 수성구 지역 학교 3곳과 협약 체결', date:'2026.06.28'},
-    {tag:'세움소식', title:'재난안전 교육 ‘펫톡119’ 체험 프로그램 상시 운영 시작', date:'2026.06.10'},
-    {tag:'언론보도', title:'지역 언론에 소개된 세움의 경계선지능 청년 진로·자립 과정', date:'2026.05.22'},
-    {tag:'세움소식', title:'사회적경제 보드게임 수업, 대구 초·중학교 24학급에서 진행', date:'2026.02.27'},
-    {tag:'언론보도', title:'사회적가치 측정 우수등급 5년 연속 달성 사례로 소개', date:'2026.01.15'},
-    {tag:'세움소식', title:'경북대 사회복지학부와 함께한 ‘느림의 미학 – 느린 김치찌개’ 공감의 식탁', date:'2024.11.25'}
+          '<p>참가문의 <a href="tel:070-7792-0179">070-7792-0179</a></p>'}
   ];
   var list = document.getElementById('newsList');
   var total = document.getElementById('newsTotal');
@@ -1328,6 +1325,9 @@ header{position:static !important}
              '<div class="newsli-body">'+body+'</div></details></li>';
     }).join('');
     total.textContent = items.length;
+    /* [2026-08-19] 분류를 고르면 '전체 N건'이 아니라 고른 분류 이름이 나오게 한다. */
+    var scopeEl = document.getElementById('newsScope');
+    if (scopeEl) scopeEl.textContent = tab;
     applyRecruitTab(tab);   /* [2026-07-30] 탭에 맞춰 모집 공지 카드를 보이거나 감춘다 */
   }
 
@@ -1478,7 +1478,9 @@ header{position:static !important}
     var closed = f ? isClosed(f.deadline) : false;
     /* 모집중일 때는 '지금 보여주기' 스위치를 따르고,
        마감된 뒤에는 '마감 뒤 처리' 설정을 따른다. */
-    var hide = !f || !f.title || (closed ? f.after_deadline === 'hide' : f.show === false);
+    /* [2026-08-19] 마감된 모집은 상단 상세 카드를 내리고 아래 소식 목록 항목만 남긴다.
+       (예전에는 같은 모집이 상단 카드와 목록에 두 번 나왔다) */
+    var hide = !f || !f.title || closed || f.show === false;
     RECRUIT_OK  = !hide;
     RECRUIT_TAG = (f && f.news_tag) || '공지';
     if (hide){ box.style.display = 'none'; return; }
