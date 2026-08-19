@@ -1493,9 +1493,11 @@ header{position:static !important}
     var badge = closed
       ? '<span class="pill gray">모집 마감</span>'
       : '<span class="pill amber">' + esc(f.badge || '모집 공지') + '</span>';
+    /* [2026-08-19] 마감일이 없는 모집(정원제 등)은 key_text 로 표시 문구를 직접 정할 수 있다.
+       예전에는 마감일이 비면 무조건 '상시 모집'으로 나왔다. */
     var keyText = f.deadline
       ? (closed ? fmtDate(f.deadline) + ' 접수 마감됨' : fmtDate(f.deadline) + '까지 접수')
-      : '상시 모집';
+      : (f.key_text || '상시 모집');
     /* 요약 한 줄: 짧은 소개가 있으면 그것을, 없으면 본문 첫 문단을 쓴다 */
     var sumText = f.short_desc || String(f.intro || '').split(/\n\s*\n/)[0] || '';
 
