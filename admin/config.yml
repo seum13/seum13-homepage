@@ -121,6 +121,39 @@ collections:
                   - { label: "홈페이지에서 감추기", value: "hide" }
                 hint: "그대로 두면 어떤 사업을 했는지 기록으로 남고, 다음 모집 때 참고가 됩니다."
 
+              # ── 마감 뒤 결과 알림 (합격자 발표 등) ─────────────────
+              # 아래 5칸은 모두 선택입니다. 비워두면 예전처럼 회색 '모집 마감' 카드로만 남습니다.
+              - name: "result_badge"
+                label: "마감 뒤 결과 표시"
+                widget: "string"
+                required: false
+                hint: "★ 예: 합격자 발표. 적어 두면 홈 화면의 회색 '모집 마감' 카드가 노란색 결과 카드로 바뀝니다. 비워두면 그대로 '모집 마감'입니다."
+
+              - name: "result_date"
+                label: "결과 발표일"
+                widget: "string"
+                required: false
+                pattern: ['^(\d{4}\.\d{2}\.\d{2})?$', "2026.09.08 처럼 점으로 구분해 적어주세요"]
+                hint: "카드에 '2026년 9월 8일(화) 발표'처럼 나옵니다."
+
+              - name: "result_title"
+                label: "결과 카드 제목"
+                widget: "string"
+                required: false
+                hint: "비우면 원래 모집 제목을 그대로 씁니다."
+
+              - name: "result_desc"
+                label: "결과 카드 설명"
+                widget: "text"
+                required: false
+                hint: "카드 아래에 들어갈 한–두 줄 설명입니다. 비우면 원래 모집 설명을 그대로 씁니다."
+
+              - name: "result_news"
+                label: "연결할 소식 글 제목"
+                widget: "string"
+                required: false
+                hint: "소식에 올린 발표글의 제목을 띄어쓰기까지 똑같이 적어주세요. 카드를 누르면 그 글이 바로 펼쳐집니다."
+
               - name: "in_cards"
                 label: "홈 화면 '지금 모집·홍보 중'에도 넣기"
                 widget: "boolean"
