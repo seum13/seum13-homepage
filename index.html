@@ -278,6 +278,19 @@ body.hc .btn.soon{background:#DDD9D1;color:#212E2B}
 .rf-body{padding-bottom:.4rem;display:flex;flex-direction:column;gap:1rem;line-height:1.8}
 .rf-poster{width:100%;max-width:26rem;height:auto;border-radius:12px;border:1px solid var(--line)}
 #recruitFeatured.flash{box-shadow:0 0 0 4px var(--amber)}
+/* [2026-09-08] 홈 '최근 공지' 한 줄 배너.
+   data/news.json 의 '공지' 가운데 가장 최근 것을 홈 첫 화면에 한 줄로 보여준다.
+   합격자 발표·정정·마감 안내처럼 모집 카드가 담지 못하는 알림이 여기에 올라온다.
+   보여줄 공지가 없으면(또는 오래되면) 이 줄은 통째로 사라진다. */
+#homeNoticeWrap[hidden]{display:none}
+.notice-bar{display:flex;align-items:center;gap:.5rem .85rem;flex-wrap:wrap;background:var(--amber-l);border-radius:14px;padding:.95rem 1.3rem;color:var(--ink);text-decoration:none;line-height:1.6}
+.notice-bar:hover{box-shadow:var(--sh-sm)}
+.notice-bar:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.notice-bar .nb-date{color:var(--amber-t);font-weight:700;font-size:.95rem}
+.notice-bar .nb-title{font-weight:700;flex:1 1 20rem;min-width:0}
+.notice-bar .nb-go{font-weight:700;color:var(--teal-d);white-space:nowrap}
+@media(max-width:640px){.notice-bar{padding:.9rem 1.1rem}.notice-bar .nb-go{width:100%}}
+#newsList .newsli.flash{box-shadow:0 0 0 4px var(--amber);border-color:var(--amber)}
 @media(max-width:640px){
   #recruitFeatured{padding:1.2rem}
   .rf-top{grid-template-columns:5rem minmax(0,1fr);gap:.9rem}
@@ -416,6 +429,18 @@ header{position:static !important}
         <div class="stat"><b><span data-count="5">5</span><i>년</i></b><span>사회적가치 우수등급 연속<br><small style="font-weight:500;color:var(--ink2)">2021 – 2025</small></span></div>
       </div>
     </div>
+  </div>
+
+  <!-- [2026-09-08] 최근 공지 배너.
+       내용은 data/news.json 에서 자동으로 채워지므로 여기 손댈 일은 없다.
+       보여줄 공지가 없으면 화면에 나오지 않는다. -->
+  <div class="wrap" id="homeNoticeWrap" hidden style="margin-top:1.8rem">
+    <a class="notice-bar" id="homeNotice" href="#news">
+      <span class="pill amber">새 공지</span>
+      <span class="nb-date" id="homeNoticeDate"></span>
+      <span class="nb-title" id="homeNoticeTitle"></span>
+      <span class="nb-go">자세히 보기 →</span>
+    </a>
   </div>
 
   <div class="wrap sec" data-reveal>
@@ -1322,8 +1347,10 @@ header{position:static !important}
                  '<span style="font-weight:600">'+n.title+'</span>'+
                  '<span class="date">'+n.date+'</span>';
       var body = newsImage(n) + newsBody(n.body);
-      if (!body) return '<li class="newsli">'+head+'</li>';
-      return '<li class="newsli has-body"><details><summary>'+head+'</summary>'+
+      /* [2026-09-08] 홈 배너·모집 카드에서 이 항목을 바로 펼치기 위한 표식 */
+      var key = ' data-title="' + esc(n.title) + '"';
+      if (!body) return '<li class="newsli"'+key+'>'+head+'</li>';
+      return '<li class="newsli has-body"'+key+'><details><summary>'+head+'</summary>'+
              '<div class="newsli-body">'+body+'</div></details></li>';
     }).join('');
     total.textContent = items.length;
@@ -1331,6 +1358,77 @@ header{position:static !important}
     var scopeEl = document.getElementById('newsScope');
     if (scopeEl) scopeEl.textContent = tab;
     applyRecruitTab(tab);   /* [2026-07-30] 탭에 맞춰 모집 공지 카드를 보이거나 감춘다 */
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     [2026-09-08] 소식 항목 하나를 바로 펼쳐 보여준다.
+     홈의 '최근 공지' 배너와 '합격자 발표' 카드가 이 함수를 함께 쓴다.
+     ══════════════════════════════════════════════════════════ */
+  function openNewsByTitle(t){
+    if (!t) return;
+    if (location.hash !== '#news') location.hash = '#news';
+    route();
+    setTimeout(function(){
+      /* 분류 탭이 '전체'가 아니면 되돌린다(다른 탭에서는 항목이 없을 수 있다) */
+      var on  = document.querySelector('.tabs button.on');
+      var cur = on ? on.getAttribute('data-tab') : '전체';
+      if (cur !== '전체'){
+        var all = document.querySelector('.tabs button[data-tab="전체"]');
+        if (all) all.click();
+      }
+      var li = document.querySelector('#newsList .newsli[data-title="' +
+               String(t).replace(/"/g, '&quot;') + '"]');
+      if (!li) return;
+      var dt = li.querySelector('details');
+      if (dt) dt.open = true;
+      var hd  = document.querySelector('header');
+      var off = (hd ? hd.getBoundingClientRect().height : 0) + 16;
+      var y   = li.getBoundingClientRect().top + (window.pageYOffset || 0) - off;
+      if (y < 0) y = 0;
+      try { window.scrollTo({top:y, left:0, behavior:'smooth'}); }
+      catch(_){ window.scrollTo(0, y); }
+      li.classList.add('flash');
+      setTimeout(function(){ li.classList.remove('flash'); }, 1600);
+    }, 260);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     [2026-09-08] 홈 '최근 공지' 배너.
+     '지금 모집·홍보 중' 카드는 모집 건만 담기 때문에,
+     합격자 발표·정정·마감 안내 같은 공지가 홈에서 전혀 보이지 않았다.
+     이제 data/news.json 의 '공지' 중 가장 최근 것 하나가 홈 위쪽에 한 줄로 뜬다.
+
+     · 모집 안내(recruit.json 에서 자동으로 만든 항목)는 아래 카드가 이미 담당하므로 넣지 않는다.
+     · 모집 카드가 '합격자 발표'로 이미 가리키고 있는 글도 건너뛴다.
+       같은 화면에 같은 말을 두 번 쓰지 않고, 배너는 그 다음 공지를 맡는다.
+     · NOTICE_MAX_DAYS 일이 지나면 배너가 스스로 내려간다(오래된 안내가 남지 않게).
+     · 새 공지를 소식에 올리면 배너는 저절로 바뀐다. 따로 손댈 곳이 없다.
+     ══════════════════════════════════════════════════════════ */
+  var NOTICE_MAX_DAYS = 45;
+  var NOTICE_SKIP = '';   /* 모집 카드가 이미 보여주는 글 제목 */
+  function drawHomeNotice(){
+    var wrap = document.getElementById('homeNoticeWrap');
+    if (!wrap) return;
+    var pick = null;
+    for (var i = 0; i < NEWS.length; i++){
+      var n = NEWS[i];
+      if (!n || !n.title || n.visible === false) continue;
+      if ((n.tag || '공지') !== '공지') continue;
+      if (NOTICE_SKIP && n.title === NOTICE_SKIP) continue;   /* 카드와 중복 */
+      var d = toDate(n.date);
+      if (!d) continue;
+      var age = (Date.now() - d.getTime()) / 86400000;
+      if (age > NOTICE_MAX_DAYS || age < -1) continue;   /* 너무 오래됐거나 아직 날짜가 안 된 것 */
+      if (!pick || String(n.date) > String(pick.date)) pick = n;
+    }
+    if (!pick){ wrap.hidden = true; return; }
+    var dEl = document.getElementById('homeNoticeDate');
+    var tEl = document.getElementById('homeNoticeTitle');
+    if (dEl) dEl.textContent = fmtDate(pick.date);
+    if (tEl) tEl.textContent = pick.title;
+    wrap.hidden = false;
+    var a = document.getElementById('homeNotice');
+    if (a) a.onclick = function(e){ e.preventDefault(); openNewsByTitle(pick.title); };
   }
 
   /* [2026-07-29] 소식에 붙인 사진. 없으면 빈 문자열. */
@@ -1373,7 +1471,15 @@ header{position:static !important}
       title: f.short_title || f.title,
       desc: f.short_desc || '',
       link: '#news',
-      highlight: true
+      highlight: true,
+      /* [2026-09-08] 모집이 끝난 뒤 '합격자 발표'처럼 결과를 알리는 값들.
+         recruit.json 에 result_badge 를 적어 두면 회색 '모집 마감' 카드가
+         결과 카드로 바뀐다. 안 적으면 예전처럼 '모집 마감'으로만 남는다. */
+      result_badge: f.result_badge || '',
+      result_date:  f.result_date  || '',
+      result_title: f.result_title || '',
+      result_desc:  f.result_desc  || '',
+      result_news:  f.result_news  || ''
     };
   }
 
@@ -1381,35 +1487,58 @@ header{position:static !important}
     var box = document.getElementById('recruitCards');
     if (!box) return;
     var head = recruitAsCard(featured);
+    /* [2026-09-08] 결과 카드가 가리키는 글은 홈 배너가 중복해서 보여주지 않도록 알려둔다 */
+    NOTICE_SKIP = (head && isClosed(head.deadline) && head.result_badge && head.result_news)
+      ? head.result_news : '';
     cards = (head ? [head] : []).concat(cards || []);
     if (!cards.length) return;
+    /* [2026-09-08] 결과(합격자 발표)가 붙은 카드는 '끝난 카드'로 보지 않는다.
+       마감됐다고 뒤로 밀어 버리면 정작 봐야 할 발표가 맨 끝으로 가기 때문이다. */
+    function isDone(c){
+      return (isClosed(c && c.deadline) && !(c && c.result_badge)) ? 1 : 0;
+    }
     /* 마감된 카드는 뒤로 보낸다 */
     var ordered = cards.slice().sort(function(a, b){
-      return (isClosed(a && a.deadline) ? 1 : 0) - (isClosed(b && b.deadline) ? 1 : 0);
+      return isDone(a) - isDone(b);
     });
     var html = ordered.map(function(c){
       if (!c || !c.title) return '';
       var closed = isClosed(c.deadline);
-      var border = (c.highlight && !closed) ? 'border:1px solid var(--teal);' : '';
-      var pill = closed ? 'pill gray' : 'pill ' + (c.color === 'amber' ? 'amber' : 'teal');
-      var badge = closed ? '모집 마감' : c.badge;
-      var periodText = c.deadline
-        ? (closed ? fmtDate(c.deadline) + ' 접수 마감됨' : '~ ' + fmtDate(c.deadline) + ' 접수')
-        : c.period;
+      /* 마감됐는데 결과가 등록돼 있으면 '모집 마감'이 아니라 결과 카드로 보여준다 */
+      var result = !!(closed && c.result_badge);
+      var border = ((c.highlight && !closed) || result) ? 'border:1px solid var(--teal);' : '';
+      var pill = result ? 'pill amber'
+               : (closed ? 'pill gray' : 'pill ' + (c.color === 'amber' ? 'amber' : 'teal'));
+      var badge = result ? c.result_badge : (closed ? '모집 마감' : c.badge);
+      var periodText = result
+        ? (c.result_date ? fmtDate(c.result_date) + ' 발표' : '')
+        : (c.deadline
+            ? (closed ? fmtDate(c.deadline) + ' 접수 마감됨' : '~ ' + fmtDate(c.deadline) + ' 접수')
+            : c.period);
       var period = periodText
         ? '<small style="font-weight:600;color:var(--ink2)">' + esc(periodText) + '</small>' : '';
-      return '<article class="card' + (closed ? ' is-closed' : '') + '" style="' + border + 'display:flex;flex-direction:column;gap:.55rem">' +
+      var cTitle = (result && c.result_title) ? c.result_title : c.title;
+      var cDesc  = (result && c.result_desc)  ? c.result_desc  : c.desc;
+      var newsKey = (result && c.result_news)
+        ? ' data-news="' + esc(c.result_news) + '"' : '';
+      return '<article class="card' + (closed && !result ? ' is-closed' : '') + '" style="' + border + 'display:flex;flex-direction:column;gap:.55rem">' +
         '<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">' +
           '<span class="' + pill + '">' + esc(badge) + '</span>' + period + '</div>' +
-        '<a href="' + esc(c.link || '#programs') + '" style="font-size:1.12rem;font-weight:700;color:var(--ink)">' +
-          esc(c.title) + '</a>' +
-        '<small style="margin-top:auto;color:var(--ink2);line-height:1.7">' + lines(c.desc) + '</small>' +
+        '<a href="' + esc(c.link || '#programs') + '"' + newsKey + ' style="font-size:1.12rem;font-weight:700;color:var(--ink)">' +
+          esc(cTitle) + '</a>' +
+        '<small style="margin-top:auto;color:var(--ink2);line-height:1.7">' + lines(cDesc) + '</small>' +
       '</article>';
     }).join('');
     html += '<div style="background:var(--amber-l);border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;gap:.8rem;justify-content:center">' +
       '<a class="btn pr" style="justify-content:center" href="#contact">신청·문의하기 →</a>' +
       '<small style="text-align:center;color:var(--ink2)">053-795-2013</small></div>';
     box.innerHTML = html;
+    /* [2026-09-08] 결과 카드를 누르면 소식에서 그 발표글이 펼쳐진 채로 열린다 */
+    var rlink = box.querySelector('a[data-news]');
+    if (rlink) rlink.addEventListener('click', function(e){
+      e.preventDefault();
+      openNewsByTitle(rlink.getAttribute('data-news'));
+    });
   }
 
   function drawRecruitSide(f){
@@ -1577,6 +1706,7 @@ header{position:static !important}
         RECRUIT_ITEM = recruitAsNews(d.featured);
         var on0 = document.querySelector('.tabs button.on');
         renderNews(on0 ? on0.textContent.trim() : '전체');
+        drawHomeNotice();   /* [2026-09-08] 결과 카드가 정해진 뒤에 배너를 다시 고른다 */
         if (typeof observeAll === 'function') observeAll();
       })
       .catch(function(){ /* 못 읽으면 기존 내용 유지 */ });
@@ -1597,10 +1727,12 @@ header{position:static !important}
         NEWS = live;
         var on = document.querySelector('.tabs button.on');
         renderNews(on ? on.textContent.trim() : '전체');
+        drawHomeNotice();   /* [2026-09-08] 홈 '최근 공지' 배너 갱신 */
       })
       .catch(function(){ /* 못 읽으면 기존 목록 유지 */ });
   })();
   renderNews('전체');
+  drawHomeNotice();   /* [2026-09-08] 소식을 못 읽어도 배너가 잘못 남지 않게 먼저 한 번 */
   bindRecruitSideBtn();   /* [2026-07-30] 모집 자료를 못 읽었을 때의 안전장치 버튼도 눌리게 */
   document.querySelectorAll('.tabs button').forEach(function(b){
     b.addEventListener('click', function(){
