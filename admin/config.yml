@@ -27,6 +27,98 @@ display_url: https://seum13.com
 logo_url: https://seum13.com/images/logo-seum.jpg
 
 collections:
+# ─────────────────────────────────────────────
+  #  칼럼 (현장에서 쓰는 글)
+  # ─────────────────────────────────────────────
+  #  여기에 글을 저장하면 seum13.com/column/{주소}/ 페이지가
+  #  자동으로 만들어집니다. 검색에 잡히는 것은 이 칼럼입니다.
+  #  ※ 소식은 목록 한 줄, 칼럼은 독립된 한 페이지입니다.
+  - name: "column"
+    label: "칼럼"
+    label_singular: "칼럼"
+    folder: "data/columns"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{date}}  ·  {{title}}"
+    sortable_fields: ["date", "title"]
+    description: "현장에서 쓰는 글입니다. 저장하면 몇 분 뒤 seum13.com/column/ 에 새 페이지가 생깁니다. 모집 공고는 여기가 아니라 '모집 안내'에 적어주세요."
+    fields:
+      - name: "title"
+        label: "제목"
+        widget: "string"
+        hint: "칼럼 목록과 페이지 맨 위에 크게 나옵니다."
+
+      - name: "date"
+        label: "날짜"
+        widget: "datetime"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        picker_utc: false
+        hint: "최신 글이 목록 맨 위에 옵니다."
+
+      - name: "author"
+        label: "글쓴이"
+        widget: "string"
+        default: "교육협동조합 세움"
+        hint: "예) 진꿈이 (교육협동조합 세움)"
+
+      - name: "kicker"
+        label: "머리말"
+        widget: "string"
+        default: "칼럼"
+        hint: "제목 위에 작게 붙는 분류입니다. 예) 함께 일하는 방법 ①, 현장에서 씁니다 No.01"
+
+      - name: "lead"
+        label: "머리 문단"
+        widget: "text"
+        required: false
+        hint: "본문 앞에 크게 나오는 한두 문장입니다. 글을 요약하기보다 가장 하고 싶은 말을 적으세요."
+
+      - name: "body"
+        label: "본문"
+        widget: "markdown"
+        hint: "## 로 소제목, ### 로 작은 소제목, > 로 인용, - 로 목록, **글자** 로 굵게 표시됩니다."
+
+      - name: "description"
+        label: "검색 설명"
+        widget: "text"
+        required: false
+        hint: "★ 구글 검색 결과에 제목 아래 나오는 설명입니다. 80~150자 정도로, 검색할 만한 말이 들어가게 적어주세요. 비워두면 본문 앞부분이 쓰입니다."
+
+      - name: "keywords"
+        label: "검색어"
+        widget: "string"
+        required: false
+        hint: "쉼표로 구분합니다. 예) 느린학습자 취업, 경계선지능 청년, 대구 일경험"
+
+      - name: "seo_title"
+        label: "검색용 제목"
+        widget: "string"
+        required: false
+        hint: "비워두면 '제목 | 교육협동조합 세움' 이 됩니다. 검색어를 더 넣고 싶을 때만 쓰세요."
+
+      - name: "image"
+        label: "공유 썸네일"
+        widget: "image"
+        required: false
+        choose_url: false
+        hint: "카톡·페이스북에 링크를 붙일 때 보이는 그림입니다. 가로 1200 × 세로 630 이 알맞습니다. 비워두면 세움 기본 이미지가 쓰입니다."
+
+      - name: "note"
+        label: "맨 아래 알림글"
+        widget: "text"
+        required: false
+        hint: "예) ※ 개인정보 보호를 위해 사례는 익명·각색했습니다."
+
+      - name: "draft"
+        label: "아직 공개하지 않기"
+        widget: "boolean"
+        default: false
+        hint: "켜두면 저장은 되지만 홈페이지에는 나오지 않습니다. 쓰는 중일 때 켜두세요."
+
   # ─────────────────────────────────────────────
   #  소식 · 공지
   # ─────────────────────────────────────────────
