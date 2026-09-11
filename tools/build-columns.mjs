@@ -291,7 +291,7 @@ ${seriesBox(cols)}
 
 const TOPBAR = `<header class="topbar"><div class="wrap">
 <a href="/" style="color:var(--teal-d);font-weight:800">교육협동조합 세움</a>
-<a href="/column/">칼럼</a><a href="/work-experience/">일경험</a><a href="/#news">소식</a><a href="/#contact">문의</a>
+<a href="/column/">칼럼</a><a href="/work-experience/">일경험</a><a href="/for-employers/">사업장</a><a href="/#news">소식</a><a href="/#contact">문의</a>
 </div></header>`;
 
 const COLUMN_CSS = `
@@ -341,6 +341,7 @@ const FIXED = [
   ['/', 'weekly', '1.0'],
   ['/work-experience/', 'monthly', '0.9'],
   ['/about-slow-learner/', 'monthly', '0.9'],
+  ['/for-employers/', 'monthly', '0.9'],
   ['/daegu/', 'monthly', '0.8'],
   ['/column/', 'weekly', '0.8'],
 ];
