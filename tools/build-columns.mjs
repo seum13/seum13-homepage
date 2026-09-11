@@ -358,6 +358,45 @@ async function writeSitemap(cols) {
   log('사이트맵 갱신:', rows.length, '개 주소');
 }
 
+
+/* ── RSS 피드 (네이버 서치어드바이저용) ──────────────────
+   네이버는 RSS로 새 글을 빠르게 물어간다.
+   칼럼을 올리면 이 파일도 함께 갱신된다. */
+function rfc822(d) {
+  const dt = new Date((d || new Date().toISOString().slice(0, 10)) + 'T09:00:00+09:00');
+  return isNaN(dt) ? new Date().toUTCString() : dt.toUTCString();
+}
+
+async function writeRss(cols) {
+  const items = cols.map(c => {
+    const url = `${SITE}/column/${c.slug}/`;
+    const desc = c.meta.description || firstText(c.bodyHtml, 200);
+    return `  <item>
+    <title>${esc(c.meta.title || c.slug)}</title>
+    <link>${url}</link>
+    <guid isPermaLink="true">${url}</guid>
+    <description>${esc(desc)}</description>
+    <author>${esc(c.meta.author || '교육협동조합 세움')}</author>
+    <pubDate>${rfc822((c.meta.date || '').slice(0, 10))}</pubDate>
+  </item>`;
+  }).join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>교육협동조합 세움 · 현장에서 쓰는 글</title>
+  <link>${SITE}/column/</link>
+  <description>대구 느린학습자(경계선지능) 청년의 취업과 일경험, 노동인권 교육 현장 기록</description>
+  <language>ko</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+${items}
+</channel>
+</rss>
+`;
+  await fs.writeFile(path.join(ROOT, 'rss.xml'), xml);
+  log('RSS 갱신:', cols.length, '건');
+}
+
 /* ── 실행 ─────────────────────────────────────────── */
 async function main() {
   let files = [];
@@ -398,6 +437,7 @@ async function main() {
   log('생성: /column/ (목록', cols.length, '건)');
 
   await writeSitemap(cols);
+  await writeRss(cols);
   log('완료');
 }
 
