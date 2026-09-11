@@ -13,3 +13,6 @@ Allow: /
 Disallow: /admin/
 
 Sitemap: https://seum13.com/sitemap.xml
+
+# 칼럼 RSS 피드 (네이버 등 수집기용)
+Sitemap: https://seum13.com/rss.xml
