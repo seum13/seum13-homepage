@@ -155,7 +155,7 @@ function pageHtml({ css, slug, meta, bodyHtml, others }) {
   const rel = [
     ...others.slice(0, 2).map(o => `<a href="/column/${o.slug}/">${esc(o.meta.title || o.slug)}</a>`),
     '<a href="/work-experience/">느린학습자(경계선지능) 청년 취업·일경험 지원</a>',
-    '<a href="/about-slow-learner/">경계선지능이란? 부모가 가장 많이 묻는 질문</a>'
+    '<a href="/about-slow-learner/">경계선지능은 장애인가요? 뜻과 특징</a>'
   ].join('\n');
 
   return `<!DOCTYPE html>
@@ -282,7 +282,7 @@ ${seriesBox(cols)}
 <div style="border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1.5rem">
 <strong style="color:var(--ink3);font-size:.9rem">함께 보면 좋은 페이지</strong>
 <a style="display:block;margin:.55rem 0;font-weight:600" href="/work-experience/">느린학습자(경계선지능) 청년 취업·일경험 지원</a>
-<a style="display:block;margin:.55rem 0;font-weight:600" href="/about-slow-learner/">경계선지능이란? 부모가 가장 많이 묻는 질문</a>
+<a style="display:block;margin:.55rem 0;font-weight:600" href="/about-slow-learner/">경계선지능은 장애인가요? 뜻과 특징</a>
 <a style="display:block;margin:.55rem 0;font-weight:600" href="/daegu/">대구 경계선지능·느린학습자 지원 안내</a>
 </div>
 </main>
