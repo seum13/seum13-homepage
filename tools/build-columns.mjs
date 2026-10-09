@@ -398,6 +398,48 @@ ${items}
   log('RSS 갱신:', cols.length, '건');
 }
 
+/* ── 홈 화면 「현장에서 쓰는 글」 자동 갱신 (2026-10-10) ──────────
+   index.html 의 <!-- HOME-COLUMNS:START --> ~ <!-- HOME-COLUMNS:END -->
+   사이를 최신 칼럼 HOME_COUNT 편으로 다시 채운다.
+   표시가 없으면 아무것도 바꾸지 않는다(안전장치). */
+const HOME_COUNT = 3;
+const HOME_START = '<!-- HOME-COLUMNS:START -->';
+const HOME_END = '<!-- HOME-COLUMNS:END -->';
+
+/* 카드 설명: 머리말(lead) → 설명(description) → 본문 앞부분 순으로,
+   너무 길면 문장 끝에서 자른다 */
+function shortDesc(c, n = 100) {
+  const s = String(c.meta.lead || c.meta.description || firstText(c.bodyHtml, 400))
+    .replace(/\s+/g, ' ').trim();
+  if (s.length <= n) return s;
+  const cut = s.slice(0, n);
+  const end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('다.'), cut.lastIndexOf('요.'), cut.lastIndexOf('? '));
+  if (end > n * 0.45) return s.slice(0, cut[end] === '.' || cut[end] === '?' ? end + 1 : end + 2).trim();
+  return cut.trim() + '…';
+}
+
+/* 글쓴이: "호이 (교육협동조합 세움)" → "호이" */
+const shortAuthor = (a) => String(a || '교육협동조합 세움').replace(/\s*\([^)]*\)\s*$/, '').trim() || '교육협동조합 세움';
+
+function homeCards(cols) {
+  return cols.slice(0, HOME_COUNT).map(c => `          <a href="/column/${c.slug}/" style="display:block;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:1.4rem 1.6rem;color:inherit;text-decoration:none">
+            <div style="color:var(--teal-d);font-weight:700;font-size:.82rem;letter-spacing:.06em">${esc(c.meta.kicker || '칼럼')}</div>
+            <div style="font-weight:700;font-size:1.1rem;margin:.45rem 0 .5rem;line-height:1.45">${esc(c.meta.title || c.slug)}</div>
+            <div style="color:var(--ink2);font-size:.95rem;line-height:1.65">${esc(shortDesc(c)).replace(/&quot;/g, '"')}</div>
+            <div style="color:var(--ink3);font-size:.87rem;margin-top:.7rem">${(c.meta.date || '').slice(0, 10).replace(/-/g, '.')} · ${esc(shortAuthor(c.meta.author))}</div>
+          </a>`).join('\n');
+}
+
+async function writeHomeColumns(cols) {
+  const file = path.join(ROOT, 'index.html');
+  const site = await fs.readFile(file, 'utf8');
+  const a = site.indexOf(HOME_START), b = site.indexOf(HOME_END);
+  if (a < 0 || b < a) { log('홈 칼럼 표시를 찾지 못해 홈 화면은 그대로 둡니다.'); return; }
+  const next = site.slice(0, a + HOME_START.length) + '\n' + homeCards(cols) + '\n' + site.slice(b);
+  await fs.writeFile(file, next);
+  log('홈 화면 칼럼 갱신:', cols.slice(0, HOME_COUNT).map(c => c.slug).join(', '));
+}
+
 /* ── 실행 ─────────────────────────────────────────── */
 async function main() {
   let files = [];
@@ -439,6 +481,8 @@ async function main() {
 
   await writeSitemap(cols);
   await writeRss(cols);
+  try { await writeHomeColumns(cols); }
+  catch (e) { log('홈 화면 칼럼 갱신은 건너뜀:', e && e.message); }
   log('완료');
 }
 
