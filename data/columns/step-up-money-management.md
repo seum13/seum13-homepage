@@ -5,6 +5,7 @@ description: 자립생활 스텝Up의 돈관리 시간에는 수입과 지출, �
 keywords: 자립생활스텝Up, 돈관리교육, 생활비관리, 금융사기예방, 교육협동조합세움
 date: 2026-10-09
 author: 교육협동조합 세움
+kicker: 현장에서 씁니다 No.04
 lead: 자립생활 스텝Up의 돈관리 시간에는 수입과 지출, 생활비와 저축, 금융사기 예방을 생활 속 선택과 연결해 살펴보았습니다.
 image: /images/priority-3-A02-card.png
 draft: false

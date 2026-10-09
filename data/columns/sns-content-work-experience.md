@@ -5,6 +5,7 @@ description: 사진을 고르고 글을 정리하고, 카드뉴스와 후기글�
 keywords: 청년일경험, SNS콘텐츠제작, 카드뉴스제작, Canva, 교육협동조합세움
 date: 2026-10-09
 author: 교육협동조합 세움
+kicker: 현장에서 씁니다 No.03
 lead: 사진을 고르고 글을 정리하고, 카드뉴스와 후기글을 직접 만들었습니다. 세움 SNS 콘텐츠 제작 일경험의 활동 기록입니다.
 image: /images/priority-2-A01-card.png
 draft: false
